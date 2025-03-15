@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import postServices from "../../usecases/postService";
+import UserRepository from "../../infrastructure/repositories/userRepository";
 
 interface AuthenticatedRequest extends Request {
     user?: { id: string; name: string; email: string; role: string }; 
@@ -8,7 +9,7 @@ interface AuthenticatedRequest extends Request {
 const postController = {
     async addPost(req:AuthenticatedRequest,res:Response){
     try {
-        const userId = req.user?.id
+        const userId =   req.user?.id
         if(!userId) throw new Error('user is not authenticated ')
         const {text} = req.body
         const len = text.trim().length

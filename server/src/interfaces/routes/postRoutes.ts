@@ -10,6 +10,6 @@ router.post(
   authorizeRoles(["user"]),
   postController.addPost
 );
-router.get('/get-post',postController.getPosts)
+router.get('/get-post',verifyToken(),authorizeRoles(["user","admin"]),postController.getPosts)
 
 export default router;

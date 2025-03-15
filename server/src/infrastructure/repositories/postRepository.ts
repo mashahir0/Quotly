@@ -5,8 +5,8 @@ const postRepository =  {
  async save(post : IPost){
     return await new postModel(post).save()
  },
- async count() {
-   return await postModel.countDocuments();
+ async count(filter = {}) {
+   return await postModel.countDocuments(filter);
  },
 
  async findWithPagination(skip: number, limit: number) {
@@ -16,7 +16,10 @@ const postRepository =  {
      .skip(skip)
      .limit(limit)
      .populate("userId", "name"); // Get only `name` from User model
- }
+ },
+ async deletePostsByUser(userId: string) {
+  return await postModel.deleteMany({ userId: userId }); // Delete all posts of the user
+},
 }
 
 export default postRepository

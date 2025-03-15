@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema<IUser>({
   password: { type: String, default: null },
   userStatus:  {type : String , enum: ["Active", "Blocked"], default : 'Active'},
   role: { type: String, default: 'user' },
+  photo:{type :String,default:null}
 });
 
 

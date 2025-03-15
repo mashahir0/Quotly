@@ -1,8 +1,12 @@
 import { IPost, Post } from "../domain/Post";
 import postRepository from "../infrastructure/repositories/postRepository";
+import UserRepository from "../infrastructure/repositories/userRepository";
 
 const postServices = {
     async createPost(userId : string , text : string){
+        if(!userId) throw new Error('user not found')
+        const user =await  UserRepository.findById(userId)
+        if(!user) throw new Error('user not found')
         const post = new Post(userId , text) 
         return await postRepository.save(post)
     },

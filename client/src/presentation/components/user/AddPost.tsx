@@ -4,10 +4,12 @@
 
 import { useState } from "react";
 import { useAddPostMutation } from "../../../data/api/postApi";
+import { useGetDetailsQuery } from "../../../data/api/userApi";
 
 const AddPost: React.FC<{ onPostAdded?: () => void }> = ({ onPostAdded }) => {
   const [text, setText] = useState("");
   const [addPost, { isLoading, error }] = useAddPostMutation();
+  const {refetch} = useGetDetailsQuery()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,6 +18,7 @@ const AddPost: React.FC<{ onPostAdded?: () => void }> = ({ onPostAdded }) => {
       const res = await addPost({ text }).unwrap();
       console.log(res);
       setText(""); 
+      refetch()
       if (onPostAdded) onPostAdded();
     } catch (err) {
       console.error("Failed to add post", err);
@@ -24,7 +27,7 @@ const AddPost: React.FC<{ onPostAdded?: () => void }> = ({ onPostAdded }) => {
   console.log(error);
   
   return (
-    <div className="ml-11 w-full  max-w-md bg-white/10 text-white rounded-2xl shadow-lg p-6 self-start">
+    <div className=" w-full  max-w-md bg-white/10 text-white rounded-2xl shadow-lg p-6 self-start">
   <h2 className="text-xl font-bold mb-4 text-white text-center">Add a Post</h2>
   <form onSubmit={handleSubmit}>
     <textarea
@@ -46,7 +49,7 @@ const AddPost: React.FC<{ onPostAdded?: () => void }> = ({ onPostAdded }) => {
 )}
     <button
       type="submit"
-      className="w-full mt-4 bg-purple-600 text-white font-semibold py-2 rounded-md hover:bg-purple-700 transition-all duration-200 disabled:opacity-50"
+      className="w-full mt-4 bg-purple-600 text-white font-semibold py-2 rounded-md hover:bg-purple-700 transition-all duration-200 "
       disabled={isLoading || text.trim() === ""}
     >
       {isLoading ? "Posting..." : "Post"}

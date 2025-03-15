@@ -33,6 +33,13 @@ export const userApi = createApi({
     getDetails: builder.query<any, void>({
       query: () => "/get-details",
     }),
+    updateProfile: builder.mutation<{ message: string }, FormData>({
+      query: (formData) => ({
+        url: "/update-profile",
+        method: "PUT",
+        body: formData,
+      }),
+    }),
   }),
 });
 
@@ -41,4 +48,5 @@ export const {
   useLoginMutation,
   useGoogleLoginMutation,
   useGetDetailsQuery,
+  useUpdateProfileMutation  
 } = userApi;

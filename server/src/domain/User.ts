@@ -6,6 +6,7 @@ export interface IUser {
   password: string;
   userStatus : "Active" | "Blocked";
   role: 'user' | 'admin';
+  photo : string
 }
 
 export class User {

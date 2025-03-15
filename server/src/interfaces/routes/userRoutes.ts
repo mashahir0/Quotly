@@ -2,6 +2,7 @@ import express from "express";
 import userController from "../controllers/userController";
 import { loginLimiter } from "../../infrastructure/middlewares/protectionMiddleware";
 import { authorizeRoles, verifyToken } from "../../infrastructure/middlewares/authMiddleware";
+import upload from "../../infrastructure/middlewares/upload";
 const app = express()
 const router = express.Router();
 router.post("/refresh-token", userController.refreshToken);
@@ -18,7 +19,7 @@ router.get(
   userController.getUserData
 );
 
-
+router.put("/update-profile", verifyToken(), upload.single("profilePic"), userController.uploadProfileData);
 
 
 

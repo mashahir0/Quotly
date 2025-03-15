@@ -92,6 +92,22 @@ const authController = {
       res.status(500).json({ error: "Server error" });
     }
   },
+
+  async uploadProfileData(req:AuthenticatedRequest,res:Response){
+    try {
+      const userId = req.user?.id; // Ensure user is authenticated
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+  
+      const { name } = req.body;
+      const profilePicUrl = req.file?.path; // Cloudinary uploaded image URL (if exists)
+  
+      const updatedUser = await userService.updateProfile(userId, name, profilePicUrl);
+  
+      res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
+    } catch (error:any) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  }
 };
 
 export default authController;
