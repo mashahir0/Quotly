@@ -25,8 +25,9 @@ export const verifyToken = () => {
         id: string;
         email: string;
         role: "admin" | "user";
+        status : string
       };
-
+      if(decoded.status === 'Blocked') res.status(400).json({message : 'user unable to share post'})
       req.user = decoded;
       next();
     } catch (error) {

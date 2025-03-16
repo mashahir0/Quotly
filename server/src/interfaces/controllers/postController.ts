@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import postServices from "../../usecases/postService";
 import UserRepository from "../../infrastructure/repositories/userRepository";
+import {io} from '../../server'
 
 interface AuthenticatedRequest extends Request {
     user?: { id: string; name: string; email: string; role: string }; 
@@ -36,6 +37,35 @@ const postController = {
         } catch (error) {
           console.error("Error fetching posts:", error);
           res.status(500).json({ message: "Internal Server Error" });
+        }
+      },
+
+     async  toggleLikeDislike(req: AuthenticatedRequest, res: Response){
+        try {
+          const userId = req.user?.id; // Ensure user is authenticated
+          const { postId, action } = req.body; // "like" or "dislike"
+
+          if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      
+          const updatedPost = await postServices.toggleLikeDislike(postId, userId, action);
+          
+          console.log("🔥 Emitting updateLikes event:", {
+            postId,
+            likes: updatedPost.likes,
+            dislikes: updatedPost.dislikes,
+          });
+
+          // Emit like update event to all connected clients
+          io.emit("updateLikes", { 
+            postId, 
+            likes: updatedPost.likes, 
+            dislikes: updatedPost.dislikes 
+          });
+      
+          res.status(200).json(updatedPost);
+        } catch (error: any) {
+          console.log(error)
+          res.status(500).json({ message: "Server Error", error: error.message });
         }
       },
 }

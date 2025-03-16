@@ -18,10 +18,22 @@ export const postApi = createApi({
         query: ({ page, limit }) => `/post/get-post?page=${page}&limit=${limit}`,
         providesTags:['Post']
       }),
+      toggleLikeDislike: builder.mutation<
+      { postId: string; likes: number; dislikes: number }, // Expected Response
+      { postId: string; action: "like" | "dislike" } // Expected Request Payload
+    >({
+      query: ({ postId, action }) => ({
+        url: "/post/toggle-like-dislike",
+        method: "PUT",
+        body: { postId, action },
+      }),
+      
+    }),
   }),
 });
 
 export const {
+  useToggleLikeDislikeMutation,
   useAddPostMutation,
   useGetPostsQuery
 } = postApi;

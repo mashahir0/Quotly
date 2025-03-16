@@ -6,12 +6,15 @@ export interface IPost {
     text : string,
     likes ?: number,
     dislikes ?: number,
+    likedBy?: mongoose.Schema.Types.ObjectId[] | string,
+    dislikedBy?:mongoose.Schema.Types.ObjectId[] | string,
 } 
 
 
 export class Post {
     constructor(
-        public userId : string,
-        public text : string
+        public userId : mongoose.Schema.Types.ObjectId,
+        public text : string,
+       
     ){}
 }

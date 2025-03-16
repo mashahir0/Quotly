@@ -22,7 +22,7 @@ const tokenService = {
     };
 
     return jwt.sign(
-      { id: user._id, email: user.email, role: user.role },
+      { id: user._id, email: user.email, role: user.role, status : user.userStatus },
       JWT_SECRET,
       options
     );
