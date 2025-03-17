@@ -4,6 +4,10 @@ import RegisterForm from "../../presentation/components/user/Register";
 import HomePage from "../../presentation/pages/user/HomePage";
 import UserAuthenticated from "../redux/protect/UserAuthenticated";
 import UserPrivate from "../redux/protect/userPrivate";
+import MyPostPage from "../../presentation/pages/user/MyPostPage";
+import TopProfilesPage from "../../presentation/pages/user/TopProfilesPage";
+import ChatPage from "../../presentation/pages/user/ChatPage";
+
 
 const userRoutes = [
   {
@@ -23,7 +27,19 @@ const userRoutes = [
   {
     path:'/home',
     element:(<UserPrivate><HomePage/></UserPrivate>)
-  }
+  },
+  {
+    path:'/my-posts',
+    element:(<UserPrivate><MyPostPage/></UserPrivate>)
+  },
+  {
+    path:'/top-profiles',
+    element:(<UserPrivate><TopProfilesPage/></UserPrivate>)
+  },
+  {
+    path:'/message',
+    element:(<UserPrivate><ChatPage/></UserPrivate>)
+  },
 ];
 
 export default userRoutes;

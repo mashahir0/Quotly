@@ -4,7 +4,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 export const postApi = createApi({
   reducerPath: "postApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes:['Post'],
+  tagTypes:['Post','My-Post'],
   endpoints: (builder) => ({
     addPost: builder.mutation<{ message: string }, { text: string }>({
         query: (newPost) => ({
@@ -29,11 +29,39 @@ export const postApi = createApi({
       }),
       
     }),
+    getUserPosts: builder.query<any, { page: number; limit: number }>({
+      query: ({ page, limit }) => `/post/my-posts?page=${page}&limit=${limit}`,
+      providesTags: ["My-Post"],
+    }),
+
+    deletePost: builder.mutation<{ message: string }, { postId: string }>({
+      query: ({ postId }) => ({
+        url: `/post/${postId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Post"],
+    }),
+
+    togglePostPrivacy: builder.mutation<{ message: string }, { postId: string }>({
+      query: ({ postId }) => ({
+        url: `/post/toggle-privacy/${postId}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Post"],
+    }),
+    getTopLikedProfiles: builder.query<any, void>({
+      query: () => `/post/top-liked-profiles`,
+     
+    }),
   }),
 });
 
 export const {
   useToggleLikeDislikeMutation,
   useAddPostMutation,
-  useGetPostsQuery
+  useGetPostsQuery,
+  useDeletePostMutation,
+  useGetUserPostsQuery,
+  useTogglePostPrivacyMutation,
+  useGetTopLikedProfilesQuery
 } = postApi;

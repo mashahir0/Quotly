@@ -12,5 +12,9 @@ router.post(
 );
 router.get('/get-post',verifyToken(),authorizeRoles(["user","admin"]),postController.getPosts)
 router.put("/toggle-like-dislike",verifyToken(),postController.toggleLikeDislike);
+router.get("/my-posts", verifyToken(), postController.getUserPosts);
+router.delete("/:postId", verifyToken(), postController.deletePost);
+router.put("/toggle-privacy/:postId", verifyToken(), postController.togglePostPrivacy);
+router.get("/top-liked-profiles", postController.getTopLikedProfiles);
 
 export default router;

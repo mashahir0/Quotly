@@ -35,6 +35,7 @@ export interface IPost extends Document {
   dislikedBy: mongoose.Types.ObjectId[];
   createdAt?: Date;
   updatedAt?: Date;
+  isPublic:boolean
 }
 
 // Define Post Schema
@@ -46,6 +47,7 @@ const postSchema = new Schema<IPost>(
     dislikes: { type: Number, default: 0 },
     likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] }], // Fixed
     dislikedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User", default: [] }],
+    isPublic: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

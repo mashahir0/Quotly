@@ -38,8 +38,13 @@ const userService = {
       throw new Error("User not found");
     }
     const totalPost = await postRepository.count({ userId :id });
+    const totalLikes = await postRepository.getTotalLikes(id)
 
-    return { userData: user, totalPost: totalPost };
+    return {
+       userData: user, 
+       totalPost: totalPost ,
+       totalLikes : totalLikes
+      };
   },
   async googleLogin(accessToken: string) {
     try {

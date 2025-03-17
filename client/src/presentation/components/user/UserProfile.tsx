@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useGetDetailsQuery, useUpdateProfileMutation } from "../../../data/api/userApi";
 import { FaEdit, FaEye, FaTimes, FaSpinner } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const UserProfile = () => {
   const { data: user, refetch } = useGetDetailsQuery();
@@ -10,7 +11,7 @@ const UserProfile = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(user?.userData?.photo || null);
   const [isLoading, setIsLoading] = useState(false); // 🔹 Track loading state
-
+  console.log(user)
   // Handle file selection and generate preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -62,7 +63,7 @@ const UserProfile = () => {
           <p className="text-sm text-gray-300">Total Posts</p>
         </div>
         <div>
-          <p className="text-lg font-bold">{user?.userData?.totalLikes || 0}</p>
+          <p className="text-lg font-bold">{user?.totalLikes || 0}</p>
           <p className="text-sm text-gray-300">Total Likes</p>
         </div>
       </div>
@@ -70,7 +71,9 @@ const UserProfile = () => {
       {/* Action Buttons */}
       <div className="mt-6 flex justify-center gap-4">
         <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2">
-          <FaEye size={18} /> View Posts
+          <FaEye size={18} /> 
+          <Link to='/my-posts'>View Posts</Link>
+          
         </button>
 
         <button

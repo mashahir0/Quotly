@@ -23,7 +23,27 @@ const postServices = {
       },
       async toggleLikeDislike(postId: string, userId: string, action: "like" | "dislike") {
         return await postRepository.updateLikeDislike(postId, userId, action);
-      }
+      },
+      async getUserPosts(userId: string, page: number, limit: number) {
+        const skip = (page - 1) * limit;
+        return await postRepository.findUserPosts(userId, skip, limit);
+      },
+    
+      // ✅ Delete a post
+      async deletePost(userId: string, postId: string) {
+        const deletedPost = await postRepository.deletePost(postId, userId);
+        if (!deletedPost) throw new Error("Post not found or unauthorized");
+        return { message: "Post deleted successfully" };
+      },
+    
+      // ✅ Toggle privacy
+      async togglePostPrivacy(userId: string, postId: string) {
+        const updatedPost = await postRepository.togglePostPrivacy(postId, userId);
+        return { message: `Post is now ${updatedPost.isPublic ? "Public" : "Private"}` };
+      },
+      async getTopLikedProfiles(limit: number) {
+        return await postRepository.getTopLikedProfiles(limit);
+      },
 }
 
 

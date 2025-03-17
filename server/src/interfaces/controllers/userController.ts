@@ -81,7 +81,7 @@ const authController = {
       }
 
       const user = await userService.getUserDetails(userId);
-
+      console.log(user)
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }

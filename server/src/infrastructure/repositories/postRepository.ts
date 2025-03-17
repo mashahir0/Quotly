@@ -1,67 +1,4 @@
-// import { IPost } from "../../domain/Post";
-// import postModel from "../../domain/models/postModel";
 
-// const postRepository =  {
-//  async save(post : IPost){
-//     return await new postModel(post).save()
-//  },
-//  async count(filter = {}) {
-//    return await postModel.countDocuments(filter);
-//  },
-
-//  async findWithPagination(skip: number, limit: number) {
-//    return await postModel
-//      .find()
-//      .sort({ createdAt: -1 }) // Newest posts first
-//      .skip(skip)
-//      .limit(limit)
-//      .populate("userId", "name"); // Get only `name` from User model
-//  },
-//  async deletePostsByUser(userId: string) {
-//   return await postModel.deleteMany({ userId: userId }); // Delete all posts of the user
-// },
-// async updateLikeDislike(postId: string, userId: string, action: "like" | "dislike") {
-//   const post = await postModel.findById(postId);
-//   if (!post) throw new Error("Post not found");
-
-//   // ✅ Ensure likedBy and dislikedBy exist
-//   if (!post.likedBy) post.likedBy = [];
-//   if (!post.dislikedBy) post.dislikedBy = [];
-
-//   const hasLiked = post.likedBy.includes(userId);
-//   const hasDisliked = post.dislikedBy.includes(userId);
-
-//   if (action === "like") {
-//     if (hasLiked) {
-//       post.likes -= 1;
-//       post.likedBy = post.likedBy.filter((id) => id.toString() !== userId);
-//     } else {
-//       post.likes += 1;
-//       post.likedBy.push(userId);
-//       if (hasDisliked) {
-//         post.dislikes -= 1;
-//         post.dislikedBy = post.dislikedBy.filter((id) => id.toString() !== userId);
-//       }
-//     }
-//   } else if (action === "dislike") {
-//     if (hasDisliked) {
-//       post.dislikes -= 1;
-//       post.dislikedBy = post.dislikedBy.filter((id) => id.toString() !== userId);
-//     } else {
-//       post.dislikes += 1;
-//       post.dislikedBy.push(userId);
-//       if (hasLiked) {
-//         post.likes -= 1;
-//         post.likedBy = post.likedBy.filter((id) => id.toString() !== userId);
-//       }
-//     }
-//   }
-
-//   return await post.save();
-// }
-// }
-
-// export default postRepository
 
 
 
@@ -86,7 +23,7 @@ const postRepository = {
 
   async findWithPagination(skip: number, limit: number) {
     return await postModel
-      .find()
+      .find({ isPublic: true })
       .sort({ createdAt: -1 }) // Newest posts first
       .skip(skip)
       .limit(limit)
@@ -137,7 +74,69 @@ const postRepository = {
     }
 
     return await post.save();
-  }
+  },
+  async findUserPosts(userId: string, skip: number, limit: number) {
+    const posts = await postModel
+      .find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select("text likes dislikes isPublic createdAt");
+
+    const total = await postModel.countDocuments({ userId });
+
+    return { posts, total };
+  },
+  async deletePost(postId: string, userId: string) {
+    return await postModel.findOneAndDelete({ _id: postId, userId });
+  },
+  async togglePostPrivacy(postId: string, userId: string) {
+    const post = await postModel.findOne({ _id: postId, userId });
+    if (!post) throw new Error("Post not found");
+    post.isPublic = !post.isPublic;
+    return await post.save();
+  },
+  async getTotalLikes(userId: string) {
+    const objectId = new mongoose.Types.ObjectId(userId); 
+    const result = await postModel.aggregate([
+        { $match: { userId: objectId } }, // Match user's posts
+        { $group: { _id: null, totalLikes: { $sum: "$likes" } } } // Sum up likes
+    ]);
+    console.log('from repo post',result)
+    return result.length > 0 ? result[0].totalLikes : 0; // If no posts, return 0
+},
+async getTopLikedProfiles(limit: number = 5) {
+  const result = await postModel.aggregate([
+    {
+      $group: {
+        _id: "$userId",
+        totalLikes: { $sum: "$likes" }, // Sum likes for each user
+      },
+    },
+    { $sort: { totalLikes: -1 } }, // Sort descending by likes
+    { $limit: limit }, // Limit results (default 5)
+    {
+      $lookup: {
+        from: "users",
+        localField: "_id",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    { $unwind: "$user" }, // Flatten user array
+    {
+      $project: {
+        _id: 0,
+        userId: "$user._id",
+        name: "$user.name",
+        photo: "$user.photo",
+        totalLikes: 1,
+      },
+    },
+  ]);
+
+  return result;
+},
 };
 
 export default postRepository;
