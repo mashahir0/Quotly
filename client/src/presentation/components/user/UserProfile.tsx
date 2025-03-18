@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetDetailsQuery, useUpdateProfileMutation } from "../../../data/api/userApi";
 import { FaEdit, FaEye, FaTimes, FaSpinner } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import socket from "../../../utils/socket";
 
 const UserProfile = () => {
   const { data: user, refetch } = useGetDetailsQuery();
@@ -12,6 +13,22 @@ const UserProfile = () => {
   const [preview, setPreview] = useState<string | null>(user?.userData?.photo || null);
   const [isLoading, setIsLoading] = useState(false); // 🔹 Track loading state
   console.log(user)
+
+
+  useEffect(() => {
+    console.log("Checking user data:", user);
+  
+    if (user?.userData?._id) {
+      socket.emit("register", user.userData._id); // ✅ Correct user ID
+      console.log(`✅ User ${user.userData._id} registered in socket room`);
+    } else {
+      console.log("❌ User ID is missing, not registering in socket room.");
+    }
+  }, [user]);
+  
+  
+  
+
   // Handle file selection and generate preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

@@ -102,7 +102,6 @@ const postRepository = {
         { $match: { userId: objectId } }, // Match user's posts
         { $group: { _id: null, totalLikes: { $sum: "$likes" } } } // Sum up likes
     ]);
-    console.log('from repo post',result)
     return result.length > 0 ? result[0].totalLikes : 0; // If no posts, return 0
 },
 async getTopLikedProfiles(limit: number = 5) {

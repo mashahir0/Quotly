@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Home, MessageCircle, User, LogOut, Menu } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { clearUser } from "../../../domain/redux/slilce/userSlice";
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -96,9 +96,9 @@ const Navbar: React.FC = () => {
 
             <button
               className="block text-[#ece6ff] hover:text-white py-2"
-              onClick={() => navigate("/new-post")}
+              onClick={() => navigate("/message")}
             >
-              New Post
+              Chat
             </button>
 
             <button

@@ -6,6 +6,7 @@ import { adminApi } from "../../data/api/adminApi";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { postApi } from "../../data/api/postApi";
+import { chatApi } from "../../data/api/chatApi";
 
 
 
@@ -28,6 +29,7 @@ export const store = configureStore({
     [userApi.reducerPath]: userApi.reducer,
     [adminApi.reducerPath] : adminApi.reducer,
     [postApi.reducerPath] : postApi.reducer,
+    [chatApi.reducerPath] : chatApi.reducer,
     user : persistedUserReducer,
     admin: persistedAdminReducer
   },
@@ -35,7 +37,8 @@ export const store = configureStore({
     getDefaultMiddleware()
   .concat(userApi.middleware)
   .concat(adminApi.middleware)
-  .concat(postApi.middleware),
+  .concat(postApi.middleware)
+  .concat(chatApi.middleware),
 });
 
 

@@ -49,11 +49,7 @@ const postController = {
       
           const updatedPost = await postServices.toggleLikeDislike(postId, userId, action);
           
-          console.log("🔥 Emitting updateLikes event:", {
-            postId,
-            likes: updatedPost.likes,
-            dislikes: updatedPost.dislikes,
-          });
+         
 
           // Emit like update event to all connected clients
           io.emit("updateLikes", { 
