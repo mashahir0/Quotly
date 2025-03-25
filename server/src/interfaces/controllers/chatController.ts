@@ -85,13 +85,13 @@ async sendMessage(req: AuthenticatedRequest, res: Response) {
     }
   },
 
-  async chatUserList(req:Request, res: Response){
+  async getUsersForChat(req:Request, res: Response){
     try {
-        const users = await chatService.getChatusers()
-        res.status(200).json(users)
+      const { search = "", page = "1", limit = "10" } = req.query;
+      const users = await chatService.getUsersForChat(search as string, Number(page), Number(limit));
+      res.json({ users });
     } catch (error: any) {
-        console.log(error)
-        res.status(401).json({message : 'users not found', error : error})
+      res.status(500).json({ message: "Error fetching users", error: error.message });
     }
   }
 };

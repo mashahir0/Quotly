@@ -14,9 +14,9 @@ const chatService = {
   async markMessagesAsSeen(senderId: string, receiverId: string) {
     return await chatRepository.markMessagesAsSeen(senderId, receiverId);
   },
-  async getChatusers(){
-    return await UserRepository.getAllUsers()
-  }
+  async getUsersForChat  (search: string, page: number, limit: number)  {
+    return await UserRepository.getUsersForChat(search, page, limit);
+  },
 };
 
 export default chatService;

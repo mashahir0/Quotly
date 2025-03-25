@@ -1,7 +1,4 @@
 
-
-
-
 import mongoose from "mongoose";
 import postModel ,{IPost} from "../../domain/models/postModel";
 

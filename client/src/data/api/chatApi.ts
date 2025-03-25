@@ -43,9 +43,21 @@ export const chatApi = createApi({
         }),
         invalidatesTags: ["Messages"],
       }),
-      getUsersChat: builder.query<any, void>({
-        query: () => "/chat/user-list",
+      // getUsersChat: builder.query<any, void>({
+      //   query: () => "/chat/user-list",
+      // }),
+      getUsersChat: builder.query<{
+        users: { users: any[]; lastId: string | null };
+      }, { search?: string; page?: number; limit?: number; lastId?: string | null }>({
+        query: ({ search = "", page = 1, limit = 10, lastId = null }) => ({
+          url: `/chat/user-list`,
+          params: { search, page, limit, lastId },
+        }),
+        keepUnusedDataFor: 5,
       }),
+      
+      
+      
   }),
 });
 
@@ -56,5 +68,6 @@ export const {
 useGetMessagesQuery,
 useMarkMessagesAsSeenMutation,
 useSendMessageMutation,
-useGetUsersChatQuery
+// useGetUsersChatQuery
+useLazyGetUsersChatQuery
 } = chatApi;
