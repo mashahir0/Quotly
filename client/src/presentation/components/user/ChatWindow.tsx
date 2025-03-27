@@ -113,4 +113,3 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
 
 export default ChatWindow;
 
-
