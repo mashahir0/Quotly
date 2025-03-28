@@ -132,6 +132,12 @@ io.on("connection", (socket) => {
     console.log(`✅ User ${userId} joined their room.`);
   });
 
+  // ✅ Handle typing event
+  socket.on("typing", ({ receiverId }) => {
+    if (!receiverId || !users[receiverId]) return;
+    console.log('typing')
+    io.to(users[receiverId]).emit("typing");
+  });
   socket.on("sendMessage", (data) => {
     const { senderId, receiverId, message } = data;
     console.log(`📤 Sending message from ${senderId} to ${receiverId}`);
@@ -141,6 +147,7 @@ io.on("connection", (socket) => {
       return;
     }
 
+  
     // Ensure users are in their rooms
     socket.join(senderId);
     socket.join(receiverId);
