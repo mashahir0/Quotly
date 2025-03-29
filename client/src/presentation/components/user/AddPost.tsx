@@ -1,10 +1,9 @@
 
 
-
-
 import { useState } from "react";
 import { useAddPostMutation } from "../../../data/api/postApi";
 import { useGetDetailsQuery } from "../../../data/api/userApi";
+import toast from "react-hot-toast";
 
 const AddPost: React.FC<{ onPostAdded?: () => void }> = ({ onPostAdded }) => {
   const [text, setText] = useState("");
@@ -19,8 +18,10 @@ const AddPost: React.FC<{ onPostAdded?: () => void }> = ({ onPostAdded }) => {
       console.log(res);
       setText(""); 
       refetch()
+      toast.success(`New post shared 🎉`);
       if (onPostAdded) onPostAdded();
-    } catch (err) {
+    } catch (err) { 
+      toast.error('oops something wrong!!!!');
       console.error("Failed to add post", err);
     }
   };

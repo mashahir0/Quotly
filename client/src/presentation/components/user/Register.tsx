@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useRegisterMutation } from "../../../data/api/userApi"
 import { Link, useNavigate } from "react-router-dom"
 import { LockOpenIcon as LockClosedIcon, UserIcon, InboxIcon as EnvelopeIcon } from "lucide-react"
+import toast from "react-hot-toast"
 
 const RegisterForm = () => {
   const [name, setName] = useState("")
@@ -16,8 +17,9 @@ const RegisterForm = () => {
       await register({ name, email, password }).unwrap()
       alert("Registration Successful!")
       navigate("/login")
-    } catch (err) {
-      alert("Error registering user!")
+    } catch (err : any) {
+      console.log(err)
+      toast.error(err?.data?.error)
     }
   }
 
@@ -97,7 +99,12 @@ const RegisterForm = () => {
         </p>
       </Link>
     </form>
-    {error && <div className="mt-2 text-center text-sm text-red-600">{error.toString()}</div>}
+    {error && "data" in error && typeof error.data === "object" && (
+  <div className="mt-2 text-center text-sm text-red-600">
+    {(error.data as { error?: string })?.error || "Something went wrong. Please try again!"}
+  </div>
+)}
+
   </div>
 </div>
 

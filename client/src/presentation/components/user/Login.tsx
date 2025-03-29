@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../../../domain/redux/slilce/userSlice";
 import { useGoogleLogin } from "@react-oauth/google";
 import { FaGoogle } from "react-icons/fa"; 
+import {toast} from 'react-hot-toast'
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -51,9 +52,11 @@ const LoginForm = () => {
       const result = await login({ email, password }).unwrap();
       localStorage.setItem("userToken", result.accessToken);
       dispatch(setUser({ user: result.user, accessToken: result.accessToken }));
+      toast.success(`Welcome back, ${result.user.name}! 🎉`);
       navigate("/home");
     } catch (err) {
-      alert("Error logging in!");
+      toast.error('oops something wrong!!!!');
+      console.log(err)
     }
   };
 
@@ -67,10 +70,12 @@ const LoginForm = () => {
 
         localStorage.setItem("userToken", result.accessToken);
         dispatch(setUser({ user: result.user, accessToken: result.accessToken }));
-
+        toast.success(`Welcome back, ${result.user.name}! 🎉`);
         navigate("/home");
       } catch (err) {
+        toast.error('oops something wrong!!!!');
         console.error("Google login failed:", err);
+        navigate('/register')
       }
     },
     onError: (error) => console.log("Google Login Failed:", error),
@@ -156,8 +161,11 @@ const LoginForm = () => {
           </Link>
         </form>
 
-        {error && <div className="mt-2 text-center text-sm text-red-600">{error.toString()}</div>}
-      </div>
+        {error && "data" in error && typeof error.data === "object" && (
+  <div className="mt-2 text-center text-sm text-red-600">
+    {(error.data as { error?: string })?.error || "Something went wrong. Please try again!"}
+  </div>
+)}      </div>
     </div>
   );
 };

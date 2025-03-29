@@ -23,7 +23,7 @@ const Footer = () => {
                 <Link to="/" className="hover:text-white transition">Home</Link>
               </li>
               <li>
-                <Link to="/message" className="hover:text-white transition">New Post</Link>
+                <Link to="/message" className="hover:text-white transition">Chat</Link>
               </li>
               <li>
                 <Link to="/my-posts" className="hover:text-white transition">My Posts</Link>

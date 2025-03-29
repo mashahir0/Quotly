@@ -1,12 +1,12 @@
 
 import { useState } from "react";
 import { useGetPostsQuery } from "../../../data/api/postApi";
-import PostCard from "./PostCart";
+import PostCard from "./PostCard";
 
 
 const PostsList = () => {
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError } = useGetPostsQuery({ page, limit: 9 });
+  const { data, isLoading, isError } = useGetPostsQuery({ page, limit: 15 });
 
   if (isLoading) return <p className="text-center text-white">Loading posts...</p>;
   if (isError) return <p className="text-center text-red-500">Error loading posts</p>;
