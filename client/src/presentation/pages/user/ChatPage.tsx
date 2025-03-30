@@ -48,7 +48,7 @@ const ChatPage: React.FC = () => {
         <ChatWindow receiverId={selectedUserId} />
       </div>
 
-      <Footer />
+      <Footer />  
     </>
   );
 };

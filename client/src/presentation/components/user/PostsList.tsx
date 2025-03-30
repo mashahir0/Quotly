@@ -6,7 +6,7 @@ import PostCard from "./PostCard";
 
 const PostsList = () => {
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError } = useGetPostsQuery({ page, limit: 15 });
+  const { data, isLoading, isError } = useGetPostsQuery({ page, limit: 18 });
 
   if (isLoading) return <p className="text-center text-white">Loading posts...</p>;
   if (isError) return <p className="text-center text-red-500">Error loading posts</p>;

@@ -7,6 +7,7 @@ import UserPrivate from "../redux/protect/userPrivate";
 import MyPostPage from "../../presentation/pages/user/MyPostPage";
 import TopProfilesPage from "../../presentation/pages/user/TopProfilesPage";
 import ChatPage from "../../presentation/pages/user/ChatPage";
+import SharedPageView from "../../presentation/pages/user/SharedPageView";
 
 
 const userRoutes = [
@@ -39,6 +40,10 @@ const userRoutes = [
   {
     path:'/message',
     element:(<UserPrivate><ChatPage/></UserPrivate>)
+  },
+  {
+    path:'/sharedQuote/:shareId',
+    element:(<SharedPageView/>)
   },
 ];
 

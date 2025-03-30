@@ -53,6 +53,9 @@ export const postApi = createApi({
       query: () => `/post/top-liked-profiles`,
      
     }),
+    getSharedQuote: builder.query<any, string>({
+      query: (shareId) => `/post/quotes/${shareId}`, 
+    }),
   }),
 });
 
@@ -63,5 +66,6 @@ export const {
   useDeletePostMutation,
   useGetUserPostsQuery,
   useTogglePostPrivacyMutation,
-  useGetTopLikedProfilesQuery
+  useGetTopLikedProfilesQuery,
+  useGetSharedQuoteQuery,
 } = postApi;

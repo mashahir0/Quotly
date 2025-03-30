@@ -42,7 +42,7 @@ const PostCard = ({ post }: { post: any }) => {
   };
 
   const handleShare = async () => {
-    const postUrl = `${window.location.origin}/post/${post._id}`;
+    const postUrl = `${window.location.origin}/sharedQuote/${post?.shareId}`;
     try {
       await navigator.clipboard.writeText(postUrl);
       toast.success("🔗 Post link copied to clipboard!");

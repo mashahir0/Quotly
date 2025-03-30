@@ -133,6 +133,9 @@ async getTopLikedProfiles(limit: number = 5) {
 
   return result;
 },
+async getShared(shareId :string){
+  return await postModel.findOne({shareId})
+}
 };
 
 export default postRepository;

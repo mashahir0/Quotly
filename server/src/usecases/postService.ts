@@ -44,6 +44,9 @@ const postServices = {
       async getTopLikedProfiles(limit: number) {
         return await postRepository.getTopLikedProfiles(limit);
       },
+      async getShared(shareId :string){
+        return await postRepository.getShared(shareId)
+      }
 }
 
 

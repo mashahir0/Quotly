@@ -130,6 +130,16 @@ const postController = {
         .json({ message: "Error fetching top profiles", error: error.message });
     }
   },
+  async getSharedQuote(req:AuthenticatedRequest,res:Response){
+    try {
+      const {shareId} = req.params
+      if(!shareId) res.status(401).json({message:'shareId not found'})
+      const post = await postServices.getShared(shareId)
+      res.status(200).json(post)
+    } catch (error : any) {
+      res.status(500).json({ message: "Error fetching post", error: error });
+    }
+  }
 };
 
 export default postController;
