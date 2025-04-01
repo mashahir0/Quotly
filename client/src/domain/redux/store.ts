@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { userApi } from "../../data/api/userApi";
 import userReducer from '../redux/slilce/userSlice'
-import adminReducer from '../redux/slilce/adminSlice'
+// import adminReducer from '../redux/slilce/adminSlice'
 import { adminApi } from "../../data/api/adminApi";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -15,14 +15,14 @@ const userPersistConfig = {
   storage,
   whitelist: ["user"], 
 };
-const  adminPersistConfig= {
-  key: "admin",
-  storage,
-  whitelist: ["admin"], 
-};
+// const  adminPersistConfig= {
+//   key: "admin",
+//   storage,
+//   whitelist: ["admin"], 
+// };
 
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
-const persistedAdminReducer = persistReducer(adminPersistConfig, adminReducer);
+// const persistedAdminReducer = persistReducer(adminPersistConfig, adminReducer);
 
 export const store = configureStore({
   reducer: {
@@ -31,7 +31,7 @@ export const store = configureStore({
     [postApi.reducerPath] : postApi.reducer,
     [chatApi.reducerPath] : chatApi.reducer,
     user : persistedUserReducer,
-    admin: persistedAdminReducer
+    // admin: persistedAdminReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()

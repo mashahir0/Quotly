@@ -3,7 +3,8 @@ import { Lock, Mail } from "lucide-react";
 import { useAdminLoginMutation } from "../../../data/api/adminApi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setAdmin } from "../../../domain/redux/slilce/adminSlice";
+import { setUser } from "../../../domain/redux/slilce/userSlice";
+// import { setAdmin } from "../../../domain/redux/slilce/adminSlice";
 
 
 const AdminLogin = () => {
@@ -46,7 +47,7 @@ const AdminLogin = () => {
     try {
         const result = await adminLogin({email, password}).unwrap()
         localStorage.setItem('adminToken',result.accessToken)
-        dispatch(setAdmin({admin :result.admin , accessToken : result.accessToken} ))
+        dispatch(setUser({user :result.admin , accessToken : result.accessToken} ))
         console.log(result)
         navigate('/admin/dashboard')
     } catch (error) {

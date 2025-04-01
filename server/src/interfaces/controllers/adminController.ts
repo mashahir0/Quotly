@@ -25,11 +25,11 @@ const adminController = {
   },
   async refreshToken(req: Request, res: Response) {
     try {
-      const { refreshToken } = req.cookies;
-      if (!refreshToken)
+      const { adminRefreshToken } = req.cookies;
+      if (!adminRefreshToken)
         return res.status(401).json({ error: "No token provided" });
 
-      const newToken = await tokenService.refreshToken(refreshToken);
+      const newToken = await tokenService.refreshToken(adminRefreshToken);
 
       res.status(200).json(newToken);
     } catch (error: any) {

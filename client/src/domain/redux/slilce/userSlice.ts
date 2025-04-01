@@ -1,10 +1,6 @@
 
-
-
-
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+import { persistor } from '../store';
 // Define the initial state
 export interface UserState {
   user: {
@@ -34,6 +30,7 @@ const userSlice = createSlice({
         state.user = null;
       }
       state.accessToken = action.payload.accessToken;
+
     },
     clearUser: (state) => {
       state.user = null;

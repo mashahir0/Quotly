@@ -1,6 +1,7 @@
 import { fetchBaseQuery, BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { clearAdmin } from "../../domain/redux/slilce/adminSlice";
+import { clearUser } from "../../domain/redux/slilce/userSlice";
+// import { clearAdmin } from "../../domain/redux/slilce/adminSlice";
 
 interface RefreshResponse {
   accessToken: string;
@@ -63,9 +64,9 @@ export const baseQueryWithAdminReauth: BaseQueryFn<
       result = await baseQueryAdmin(args, api, extraOptions);
     } else {
       console.log("Refresh token failed, logging out...");
-      localStorage.removeItem("adminToken");
-      localStorage.removeItem("refreshToken");
-      api.dispatch(clearAdmin());
+      // localStorage.removeItem("adminToken");
+      // localStorage.removeItem("refreshToken");
+      // api.dispatch(clearUser());
       return refreshResult;
     }
   }
