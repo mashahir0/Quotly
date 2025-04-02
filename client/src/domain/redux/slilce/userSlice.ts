@@ -1,43 +1,42 @@
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { persistor } from '../store';
-// Define the initial state
-export interface UserState {
-  user: {
-    email: string;
-    name: string;
-    role: string;
-    _id ?: string;
-    password ?: string
-  } | null;
-  accessToken: string | null;
+
+export interface UserData {
+  email: string;
+  name: string;
+  role: string;
 }
 
-const initialState: UserState = {
+export interface AuthState {
+  user: UserData | null;
+  admin: UserData | null;
+}
+
+const initialState: AuthState = {
   user: null,
-  accessToken: null,
+  admin: null,
 };
 
-const userSlice = createSlice({
-  name: 'user',
+const authSlice = createSlice({
+  name: 'auth',
   initialState,
   reducers: {
-    setUser: (state: UserState, action: PayloadAction<UserState>) => { 
-      if (action.payload.user) {
-        const { _id, password, ...restUser } = action.payload.user; 
-        state.user = restUser;  // ✅ Store user without `_id`
-      } else {
-        state.user = null;
-      }
-      state.accessToken = action.payload.accessToken;
-
+    setUser: (state, action: PayloadAction<{ user: UserData & { _id?: string } }>) => { 
+      const { _id, ...filteredUser } = action.payload.user; // Remove `_id`
+      state.user = filteredUser;  // ✅ Update only user, keep admin intact
+    },
+    setAdmin: (state, action: PayloadAction<{ admin: UserData & { _id?: string } }>) => { 
+      const { _id, ...filteredAdmin } = action.payload.admin; // Remove `_id`
+      state.admin = filteredAdmin;  // ✅ Update only admin, keep user intact
+    },
+    clearAdmin: (state) => {
+      state.admin = null;  // ✅ Only clear admin, user remains
     },
     clearUser: (state) => {
-      state.user = null;
-      state.accessToken = null;
+      state.user = null;  // ✅ Only clear user, admin remains
     },
   },
 });
 
-export const { setUser, clearUser } = userSlice.actions;
-export default userSlice.reducer;
+export const { setUser, setAdmin, clearAdmin, clearUser } = authSlice.actions;
+export default authSlice.reducer;
+export { authSlice };

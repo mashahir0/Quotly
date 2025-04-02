@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../domain/redux/store"; // Adjust path as needed
 import { clearUser } from "../../../domain/redux/slilce/userSlice";
 import { useNavigate } from "react-router-dom";
+import { clearQuote } from "../../../domain/redux/slilce/savedQuotesSlice";
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -15,10 +16,11 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
 
   // Get user from Redux store
-  const user = useSelector((state: RootState) => state?.user?.user);
+  const user = useSelector((state: RootState) => state?.auth?.user);
   console.log(user)
   const handleLogout = () => {
     localStorage.removeItem("userToken");
+    dispatch(clearQuote())
     dispatch(clearUser());
     window.location.reload();
     navigate("/login");
@@ -61,7 +63,7 @@ const Navbar: React.FC = () => {
 
               <button className="text-[#c4b8ff] hover:text-white transition flex items-center" onClick={() => navigate("/top-profiles")}>
                 <User className="w-5 h-5 mr-2" />
-                Top Profiles
+                Ranking
               </button>
             </div>
 
@@ -102,7 +104,7 @@ const Navbar: React.FC = () => {
             </button>
 
             <button className="block text-[#ece6ff] hover:text-white py-2" onClick={() => navigate("/top-profiles")}>
-              Top Profiles
+              Ranking
             </button>
 
             {/* Mobile Logout/Login */}

@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/refresh-token", userController.refreshToken);
 
 router.post("/register", userController.register);
-router.post("/login",loginLimiter,userController.login);
+router.post("/login",userController.login);
 
 router.post("/auth/google", userController.googleAuth);
 

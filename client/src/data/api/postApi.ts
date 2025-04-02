@@ -56,6 +56,20 @@ export const postApi = createApi({
     getSharedQuote: builder.query<any, string>({
       query: (shareId) => `/post/quotes/${shareId}`, 
     }),
+    saveQuote: builder.mutation<{ success: boolean }, { postId: string }>({
+      query: ({ postId }) => ({
+        url: "/quotes/save",
+        method: "POST",
+        body: { postId },
+      }),
+    }),
+    removeQuote: builder.mutation<{ success: boolean }, { postId: string }>({
+      query: ({ postId }) => ({
+        url: "/quotes/remove",
+        method: "DELETE",
+        body: { postId },
+      }),
+    }),
   }),
 });
 
@@ -68,4 +82,6 @@ export const {
   useTogglePostPrivacyMutation,
   useGetTopLikedProfilesQuery,
   useGetSharedQuoteQuery,
+  useSaveQuoteMutation,
+  useRemoveQuoteMutation
 } = postApi;

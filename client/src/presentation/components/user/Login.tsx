@@ -8,6 +8,7 @@ import { setUser } from "../../../domain/redux/slilce/userSlice";
 import { useGoogleLogin } from "@react-oauth/google";
 import { FaGoogle } from "react-icons/fa"; 
 import {toast} from 'react-hot-toast'
+import { AppDispatch } from "../../../domain/redux/store";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -17,7 +18,7 @@ const LoginForm = () => {
   const [login, { isLoading, error }] = useLoginMutation();
   const [googleLogin] = useGoogleLoginMutation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const validateForm = () => {
     let valid = true;
@@ -51,7 +52,7 @@ const LoginForm = () => {
     try {
       const result = await login({ email, password }).unwrap();
       localStorage.setItem("userToken", result.accessToken);
-      dispatch(setUser({ user: result.user, accessToken: result.accessToken }));
+      dispatch(setUser({user : result.user}));
       toast.success(`Welcome back, ${result.user.name}! 🎉`);
       navigate("/home");
     } catch (err) {
@@ -69,7 +70,7 @@ const LoginForm = () => {
         const result = await googleLogin({ token: access_token }).unwrap();
 
         localStorage.setItem("userToken", result.accessToken);
-        dispatch(setUser({ user: result.user, accessToken: result.accessToken }));
+        dispatch(setUser({ user: result.user}));
         toast.success(`Welcome back, ${result.user.name}! 🎉`);
         navigate("/home");
       } catch (err) {

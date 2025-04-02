@@ -1,46 +1,45 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { userApi } from "../../data/api/userApi";
-import userReducer from '../redux/slilce/userSlice'
-// import adminReducer from '../redux/slilce/adminSlice'
+import authReducer, { authSlice } from '../redux/slilce/userSlice'; // ✅ Import `authSlice` from correct path
 import { adminApi } from "../../data/api/adminApi";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { postApi } from "../../data/api/postApi";
 import { chatApi } from "../../data/api/chatApi";
+import savedQuotesReducer from '../redux/slilce/savedQuotesSlice'
 
 
-
-const userPersistConfig = {
-  key: "user",
+const authPersistConfig = {
+  key: "auth",
   storage,
-  whitelist: ["user"], 
+  whitelist: ["user", "admin"], // ✅ Persist both user & admin
 };
-// const  adminPersistConfig= {
-//   key: "admin",
-//   storage,
-//   whitelist: ["admin"], 
-// };
 
-const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
-// const persistedAdminReducer = persistReducer(adminPersistConfig, adminReducer);
+const savedQuotesPersistConfig = {
+  key: "savedQuotes",
+  storage,
+  whitelist: ["savedQuotes"],
+};
+
+const persistedSavedQuotesReducer = persistReducer(savedQuotesPersistConfig, savedQuotesReducer);
+const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 
 export const store = configureStore({
   reducer: {
     [userApi.reducerPath]: userApi.reducer,
-    [adminApi.reducerPath] : adminApi.reducer,
-    [postApi.reducerPath] : postApi.reducer,
-    [chatApi.reducerPath] : chatApi.reducer,
-    user : persistedUserReducer,
-    // admin: persistedAdminReducer
+    [adminApi.reducerPath]: adminApi.reducer,
+    [postApi.reducerPath]: postApi.reducer,
+    [chatApi.reducerPath]: chatApi.reducer,
+    savedQuotes: persistedSavedQuotesReducer,
+    auth: persistedAuthReducer, // ✅ Correctly persist auth reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
-  .concat(userApi.middleware)
-  .concat(adminApi.middleware)
-  .concat(postApi.middleware)
-  .concat(chatApi.middleware),
+      .concat(userApi.middleware)
+      .concat(adminApi.middleware)
+      .concat(postApi.middleware)
+      .concat(chatApi.middleware),
 });
-
 
 export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
