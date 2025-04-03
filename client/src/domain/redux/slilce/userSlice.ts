@@ -4,6 +4,7 @@ export interface UserData {
   email: string;
   name: string;
   role: string;
+  password?:string;
 }
 
 export interface AuthState {
@@ -21,11 +22,11 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<{ user: UserData & { _id?: string } }>) => { 
-      const { _id, ...filteredUser } = action.payload.user; // Remove `_id`
+      const { _id, password, ...filteredUser } = action.payload.user; // Remove `_id`
       state.user = filteredUser;  // ✅ Update only user, keep admin intact
     },
     setAdmin: (state, action: PayloadAction<{ admin: UserData & { _id?: string } }>) => { 
-      const { _id, ...filteredAdmin } = action.payload.admin; // Remove `_id`
+      const { _id,password, ...filteredAdmin } = action.payload.admin; // Remove `_id`
       state.admin = filteredAdmin;  // ✅ Update only admin, keep user intact
     },
     clearAdmin: (state) => {

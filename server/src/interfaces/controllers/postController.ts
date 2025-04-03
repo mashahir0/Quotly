@@ -139,6 +139,40 @@ const postController = {
     } catch (error : any) {
       res.status(500).json({ message: "Error fetching post", error: error });
     }
+  },
+  async savePost(req:AuthenticatedRequest, res: Response){
+    try {
+      const userId = req.user?.id as string; // ✅ Ensure it's a string
+      const { postId } = req.body;
+  
+      if (!userId || !postId) {
+        return res.status(400).json({ message: "Missing userId or postId" });
+      }
+      const response = await postServices.savePost(userId, postId);
+      res.status(200).json(response);
+    } catch (error: any) {
+      res.status(500).json({
+        message: "Error occurred while saving post",
+        error: error.message,
+      });
+    }
+  },
+  async getSavedQuotesController (req: AuthenticatedRequest, res: Response){
+    try {
+      const userId = req.user?.id as string; // ✅ Extract user ID from auth middleware
+  
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+  
+      const savedQuotes = await postServices.getSavedQuotes(userId);
+      res.status(200).json(savedQuotes);
+    } catch (error: any) {
+      res.status(500).json({
+        message: "Error retrieving saved quotes",
+        error: error.message,
+      });
+    }
   }
 };
 

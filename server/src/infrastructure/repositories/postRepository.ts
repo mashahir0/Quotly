@@ -1,6 +1,7 @@
 
 import mongoose from "mongoose";
 import postModel ,{IPost} from "../../domain/models/postModel";
+import savePostModel from "../../domain/models/savePostModel";
 
 const postRepository = {
   async save(postData: { userId: string; text: string }) {
@@ -135,7 +136,24 @@ async getTopLikedProfiles(limit: number = 5) {
 },
 async getShared(shareId :string){
   return await postModel.findOne({shareId})
-}
+},
+async savePost(userId: string, postId: string) {
+  return await savePostModel.findOneAndUpdate(
+    { userId }, // Find by userId
+    { $addToSet: { quotes: postId } }, // Add postId only if it's not already there
+    { upsert: true, new: true } // Create a new entry if user doesn't exist
+  );
+},
+
+async findSavedPost(userId: string, postId: string) {
+  return await savePostModel.findOne({
+    userId,
+    quotes: postId,
+  });
+},
+  async getSavedQuotes(userId: string) {
+    return await savePostModel.findOne({ userId }, { quotes: 1, _id: 0 });
+  },
 };
 
 export default postRepository;

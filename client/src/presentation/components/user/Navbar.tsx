@@ -1,6 +1,3 @@
-
-
-
 import React, { useState } from "react";
 import { Home, MessageCircle, User, LogOut, LogIn, Menu } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +5,7 @@ import { RootState } from "../../../domain/redux/store"; // Adjust path as neede
 import { clearUser } from "../../../domain/redux/slilce/userSlice";
 import { useNavigate } from "react-router-dom";
 import { clearQuote } from "../../../domain/redux/slilce/savedQuotesSlice";
+
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -22,7 +20,6 @@ const Navbar: React.FC = () => {
     localStorage.removeItem("userToken");
     dispatch(clearQuote())
     dispatch(clearUser());
-    window.location.reload();
     navigate("/login");
   };
 
@@ -156,4 +153,3 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-

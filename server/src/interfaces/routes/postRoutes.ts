@@ -17,5 +17,8 @@ router.delete("/:postId", verifyToken(), postController.deletePost);
 router.put("/toggle-privacy/:postId", verifyToken(), postController.togglePostPrivacy);
 router.get("/top-liked-profiles", postController.getTopLikedProfiles);
 router.get('/quotes/:shareId',postController.getSharedQuote)
+router.get("/saved-quotes",verifyToken(),postController.getSavedQuotesController)
+router.post("/saved-quotes/save",verifyToken(), postController.savePost)
+router.post("/saved-quotes/remove")
 
 export default router;
