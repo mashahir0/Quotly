@@ -2,6 +2,7 @@ import React from 'react'
 import Navbar from '../../components/user/Navbar'
 import MyPosts from '../../components/user/MyPosts'
 import Footer from '../../components/user/Footer'
+import SavedQuotes from '../../components/user/SavedQuotes'
 
 const MyPostPage: React.FC = () => {
   return (
@@ -12,7 +13,7 @@ const MyPostPage: React.FC = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#1a0c75] p-6">
         <MyPosts />
       </div>
-
+      <SavedQuotes/>
       <Footer />
     </>
   )

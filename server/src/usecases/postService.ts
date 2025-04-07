@@ -69,6 +69,22 @@ const postServices = {
   
     return await postRepository.getSavedQuotes(userId);
   },
+  async removeSavedPost(userId: string, postId: string) {
+  if (!userId || !postId) throw new Error("Missing user or post id");
+  return await postRepository.removeSavedPost(userId, postId);
+},
+  async getAllsavedQuotes(userId: string){
+    const saved = await postRepository.getSavedQuotes(userId);
+
+    if (!saved || !saved.quotes.length) {
+      throw new Error("No saved posts found");
+    }
+  
+    return await postRepository.savedQuotesText(saved.quotes);
+  },
+  async  clearSavedQuotes(userId: string) {
+    return await postRepository.clearSavedQuotes(userId);
+  }
 };
 
 export default postServices;

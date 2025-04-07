@@ -154,6 +154,21 @@ async findSavedPost(userId: string, postId: string) {
   async getSavedQuotes(userId: string) {
     return await savePostModel.findOne({ userId }, { quotes: 1, _id: 0 });
   },
+  async removeSavedPost(userId: string, postId: string) {
+    return await savePostModel.updateOne(
+      { userId },
+      { $pull: { quotes: postId } }
+    );
+  },
+  async savedQuotesText(quotesIds: string[]) {
+    return await postModel.find({ _id: { $in: quotesIds } });
+  },
+  async  clearSavedQuotes(userId: string) {
+    return await savePostModel.updateOne(
+      { userId },
+      { $set: { quotes: [] } }
+    );
+  }
 };
 
 export default postRepository;

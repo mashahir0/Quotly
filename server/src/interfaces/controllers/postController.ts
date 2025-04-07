@@ -159,7 +159,7 @@ const postController = {
   },
   async getSavedQuotesController (req: AuthenticatedRequest, res: Response){
     try {
-      const userId = req.user?.id as string; // ✅ Extract user ID from auth middleware
+      const userId = req.user?.id ; 
   
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
@@ -173,7 +173,58 @@ const postController = {
         error: error.message,
       });
     }
+  },
+async removeSavedPost(req: AuthenticatedRequest, res: Response) {
+  try {
+    const userId = req.user?.id;
+    const { postId } = req.body;
+
+    if (!userId || !postId) {
+      return res.status(400).json({ message: "Missing userId or postId" });
+    }
+
+    const result = await postServices.removeSavedPost(userId, postId);
+    res.status(200).json({ message: "Removed from saved successfully", result });
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Error removing saved post",
+      error: error.message,
+    });
   }
+},
+async listSavedQuotes(req : AuthenticatedRequest , res : Response){
+  try {
+    const userId = req.user?.id ; 
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const savedQuotes = await postServices.getAllsavedQuotes(userId);
+    res.status(200).json(savedQuotes);
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Error retrieving saved quotes",
+      error: error.message,
+    });
+  }
+},
+async clearSavedQuote(req:AuthenticatedRequest , res:Response){
+  try {
+    console.log('1111')
+    const userId = req.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    await postServices.clearSavedQuotes(userId);
+    res.status(200).json({ message: "Saved quotes cleared successfully" });
+  } catch (error) {
+    console.error("Error clearing saved quotes:", error);
+    res.status(500).json({ message: "Something went wrong while clearing saved quotes" });
+  }
+}
 };
 
 export default postController;

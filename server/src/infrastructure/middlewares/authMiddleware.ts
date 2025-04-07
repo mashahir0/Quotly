@@ -14,6 +14,7 @@ export interface AuthenticatedRequest extends Request {
 // ✅ Verify Token Middleware (Basic Authentication)
 export const verifyToken = () => {
   return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    console.log('333333')
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ message: "No access token" });
@@ -29,6 +30,7 @@ export const verifyToken = () => {
       };
       if(decoded.status === 'Blocked') res.status(400).json({message : 'user unable to share post'})
       req.user = decoded;
+    console.log(decoded)
       next();
     } catch (error) {
       return res.status(401).json({ message: "Invalid or expired token" });
