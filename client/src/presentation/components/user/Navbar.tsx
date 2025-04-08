@@ -6,7 +6,6 @@ import { clearUser } from "../../../domain/redux/slilce/userSlice";
 import { useNavigate } from "react-router-dom";
 import { clearQuote } from "../../../domain/redux/slilce/savedQuotesSlice";
 
-
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -18,7 +17,7 @@ const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("userToken");
-    dispatch(clearQuote())
+    dispatch(clearQuote());
     dispatch(clearUser());
     navigate("/login");
   };
@@ -43,22 +42,34 @@ const Navbar: React.FC = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-6">
-              <button className="text-[#c4b8ff] hover:text-white transition flex items-center" onClick={() => navigate("/")}>
+              <button
+                className="text-[#c4b8ff] hover:text-white transition flex items-center"
+                onClick={() => navigate("/")}
+              >
                 <Home className="w-5 h-5 mr-2" />
                 Home
               </button>
 
-              <button className="text-[#c4b8ff] hover:text-white transition flex items-center" onClick={() => navigate("/message")}>
+              <button
+                className="text-[#c4b8ff] hover:text-white transition flex items-center"
+                onClick={() => navigate("/message")}
+              >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Chat
               </button>
 
-              <button className="text-[#c4b8ff] hover:text-white transition flex items-center" onClick={() => navigate("/my-posts")}>
+              <button
+                className="text-[#c4b8ff] hover:text-white transition flex items-center"
+                onClick={() => navigate("/my-posts")}
+              >
                 <User className="w-5 h-5 mr-2" />
                 My Posts
               </button>
 
-              <button className="text-[#c4b8ff] hover:text-white transition flex items-center" onClick={() => navigate("/top-profiles")}>
+              <button
+                className="text-[#c4b8ff] hover:text-white transition flex items-center"
+                onClick={() => navigate("/top-profiles")}
+              >
                 <User className="w-5 h-5 mr-2" />
                 Ranking
               </button>
@@ -88,19 +99,31 @@ const Navbar: React.FC = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-[#2e1e9c] px-4 py-3">
-            <button className="block text-[#ece6ff] hover:text-white py-2" onClick={() => navigate("/")}>
+            <button
+              className="block text-[#ece6ff] hover:text-white py-2"
+              onClick={() => navigate("/")}
+            >
               Home
             </button>
 
-            <button className="block text-[#ece6ff] hover:text-white py-2" onClick={() => navigate("/message")}>
+            <button
+              className="block text-[#ece6ff] hover:text-white py-2"
+              onClick={() => navigate("/message")}
+            >
               Chat
             </button>
 
-            <button className="block text-[#ece6ff] hover:text-white py-2" onClick={() => navigate("/my-posts")}>
+            <button
+              className="block text-[#ece6ff] hover:text-white py-2"
+              onClick={() => navigate("/my-posts")}
+            >
               My Posts
             </button>
 
-            <button className="block text-[#ece6ff] hover:text-white py-2" onClick={() => navigate("/top-profiles")}>
+            <button
+              className="block text-[#ece6ff] hover:text-white py-2"
+              onClick={() => navigate("/top-profiles")}
+            >
               Ranking
             </button>
 
@@ -129,7 +152,9 @@ const Navbar: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
             <h2 className="text-lg font-bold text-gray-800">Confirm Logout</h2>
-            <p className="text-gray-600 mt-2">Are you sure you want to log out?</p>
+            <p className="text-gray-600 mt-2">
+              Are you sure you want to log out?
+            </p>
 
             <div className="mt-4 flex justify-between">
               <button

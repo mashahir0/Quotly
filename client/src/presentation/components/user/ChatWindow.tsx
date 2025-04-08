@@ -1,9 +1,10 @@
-
-
 import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion"; 
-import { FaPaperPlane } from "react-icons/fa"; 
-import { useGetMessagesQuery, useSendMessageMutation } from "../../../data/api/chatApi";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaPaperPlane } from "react-icons/fa";
+import {
+  useGetMessagesQuery,
+  useSendMessageMutation,
+} from "../../../data/api/chatApi";
 import { useGetDetailsQuery } from "../../../data/api/userApi";
 import socket from "../../../utils/socket";
 
@@ -12,7 +13,9 @@ interface ChatWindowProps {
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
-  const { data: messages, isLoading } = useGetMessagesQuery(receiverId || "", { skip: !receiverId });
+  const { data: messages, isLoading } = useGetMessagesQuery(receiverId || "", {
+    skip: !receiverId,
+  });
   const { data: user } = useGetDetailsQuery();
   const [sendMessage] = useSendMessageMutation();
 
@@ -49,7 +52,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
 
     const handleTyping = () => {
       setIsTyping(true);
-      scrollToBottom()
+      scrollToBottom();
       // ✅ Reset typing timeout to prevent flickering
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 2000);
@@ -66,25 +69,26 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
 
   // ✅ Auto-scroll when messages change
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
   };
-  
 
   useEffect(scrollToBottom, [chatMessages]);
 
   const handleTyping = () => {
     if (!receiverId) return;
-  
+
     socket.emit("typing", { receiverId });
-  
+
     // Clear existing timeout
-    
+
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-  
+
     // Reset "isTyping" after 3 seconds
     typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 2000);
   };
-  
 
   // ✅ Handle message send
   const handleSend = async () => {
@@ -116,7 +120,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
 
   return (
     <div className="w-2/3 bg-gray-900 p-4 rounded-lg h-full flex flex-col overflow-hidden">
-    <div className="flex-1 overflow-y-auto scroll-smooth custom-scrollbar">  
+      <div className="flex-1 overflow-y-auto scroll-smooth custom-scrollbar">
         {isLoading ? (
           <div className="flex justify-center items-center h-full">
             <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
@@ -131,10 +135,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
                 className={`p-2 my-2 ${
-                  msg.senderId?._id === user?.userData?._id ? "text-right" : "text-left"
+                  msg.senderId?._id === user?.userData?._id
+                    ? "text-right"
+                    : "text-left"
                 }`}
               >
-                <p className="bg-gray-700 inline-block p-2 rounded-lg text-white">{msg.message}</p>
+                <p className="bg-gray-700 inline-block p-2 rounded-lg text-white">
+                  {msg.message}
+                </p>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -159,7 +167,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
               handleTyping();
             }}
           />
-          <button onClick={handleSend} className="ml-2 bg-blue-600 text-white p-2 rounded-md flex items-center justify-center transition hover:bg-blue-700">
+          <button
+            onClick={handleSend}
+            className="ml-2 bg-blue-600 text-white p-2 rounded-md flex items-center justify-center transition hover:bg-blue-700"
+          >
             <FaPaperPlane size={16} />
           </button>
         </div>
@@ -169,5 +180,3 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
 };
 
 export default ChatWindow;
-
-

@@ -1,28 +1,44 @@
 import { useState } from "react";
 import { FaTrash, FaShare, FaEye, FaEyeSlash } from "react-icons/fa";
-import { useGetUserPostsQuery, useDeletePostMutation, useTogglePostPrivacyMutation } from "../../../data/api/postApi";
+import {
+  useGetUserPostsQuery,
+  useDeletePostMutation,
+  useTogglePostPrivacyMutation,
+} from "../../../data/api/postApi";
 import toast from "react-hot-toast";
 
 const MyPosts = () => {
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError, refetch } = useGetUserPostsQuery({ page, limit: 12 });
+  const { data, isLoading, isError, refetch } = useGetUserPostsQuery({
+    page,
+    limit: 12,
+  });
   const [deletePost] = useDeletePostMutation();
   const [togglePostPrivacy] = useTogglePostPrivacyMutation();
-  
+
   // ✅ Delete Confirmation State
-  const [deleteModal, setDeleteModal] = useState<{ open: boolean; postId: string | null }>({
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    postId: string | null;
+  }>({
     open: false,
     postId: null,
   });
 
-  if (isLoading) return <p className="text-center text-white">Loading your posts...</p>;
-  if (isError) return <p className="text-center text-red-500">Error fetching your posts</p>;
+  if (isLoading)
+    return <p className="text-center text-white">Loading your posts...</p>;
+  if (isError)
+    return (
+      <p className="text-center text-red-500">Error fetching your posts</p>
+    );
 
   // ✅ Handle Delete (Modal)
   const handleDeleteConfirm = async () => {
     if (!deleteModal.postId) return;
     try {
-      const response = await deletePost({ postId: deleteModal.postId }).unwrap();
+      const response = await deletePost({
+        postId: deleteModal.postId,
+      }).unwrap();
       toast.error(response.message);
       refetch();
     } catch (error) {
@@ -56,14 +72,21 @@ const MyPosts = () => {
       <h2 className="text-xl font-bold mb-4 text-center">My Posts</h2>
 
       {data?.posts?.length === 0 ? (
-        <p className="text-center text-gray-300">You haven't posted anything yet.</p>
+        <p className="text-center text-gray-300">
+          You haven't posted anything yet.
+        </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {data.posts.map((post: any) => (
-            <div key={post._id} className="bg-gray-800 p-4 rounded-lg shadow-md flex flex-col justify-between">
+            <div
+              key={post._id}
+              className="bg-gray-800 p-4 rounded-lg shadow-md flex flex-col justify-between"
+            >
               {/* Post Text */}
               <p className="text-lg text-gray-300 whitespace-pre-wrap break-words overflow-auto max-h-36 p-2 rounded-md custom-scrollbar">
-                {post.text.length > 300 ? post.text.substring(0, 300) + "..." : post.text}
+                {post.text.length > 300
+                  ? post.text.substring(0, 300) + "..."
+                  : post.text}
               </p>
 
               {/* Likes & Dislikes */}
@@ -76,20 +99,31 @@ const MyPosts = () => {
               <div className="flex justify-between items-center mt-3">
                 {/* Toggle Privacy */}
                 <button
-                  className={`transition ${post.isPublic ? "text-green-400" : "text-yellow-400"}`}
+                  className={`transition ${
+                    post.isPublic ? "text-green-400" : "text-yellow-400"
+                  }`}
                   onClick={() => handleTogglePrivacy(post._id)}
                 >
-                  {post.isPublic ? <FaEye size={18} /> : <FaEyeSlash size={18} />}
+                  {post.isPublic ? (
+                    <FaEye size={18} />
+                  ) : (
+                    <FaEyeSlash size={18} />
+                  )}
                 </button>
 
                 {/* Share Button */}
-                <button onClick={() => handleShare(post._id)} className="text-blue-400 hover:text-blue-300 transition">
+                <button
+                  onClick={() => handleShare(post._id)}
+                  className="text-blue-400 hover:text-blue-300 transition"
+                >
                   <FaShare size={18} />
                 </button>
 
                 {/* Delete Button */}
                 <button
-                  onClick={() => setDeleteModal({ open: true, postId: post._id })}
+                  onClick={() =>
+                    setDeleteModal({ open: true, postId: post._id })
+                  }
                   className="text-red-500 hover:text-red-400 transition"
                 >
                   <FaTrash size={18} />
@@ -123,7 +157,9 @@ const MyPosts = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 text-center">
             <h3 className="text-xl font-bold text-white">Confirm Deletion</h3>
-            <p className="text-gray-300 mt-2">Are you sure you want to delete this post?</p>
+            <p className="text-gray-300 mt-2">
+              Are you sure you want to delete this post?
+            </p>
 
             <div className="flex justify-center mt-4 gap-4">
               <button

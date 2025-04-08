@@ -1,13 +1,18 @@
-
 import { useState } from "react";
-import { useGoogleLoginMutation, useLoginMutation } from "../../../data/api/userApi";
+import {
+  useGoogleLoginMutation,
+  useLoginMutation,
+} from "../../../data/api/userApi";
 import { Link, useNavigate } from "react-router-dom";
-import { LockOpenIcon as LockClosedIcon, InboxIcon as EnvelopeIcon } from "lucide-react";
+import {
+  LockOpenIcon as LockClosedIcon,
+  InboxIcon as EnvelopeIcon,
+} from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../../domain/redux/slilce/userSlice";
 import { useGoogleLogin } from "@react-oauth/google";
-import { FaGoogle } from "react-icons/fa"; 
-import {toast} from 'react-hot-toast'
+import { FaGoogle } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 import { AppDispatch } from "../../../domain/redux/store";
 
 const LoginForm = () => {
@@ -52,12 +57,12 @@ const LoginForm = () => {
     try {
       const result = await login({ email, password }).unwrap();
       localStorage.setItem("userToken", result.accessToken);
-      dispatch(setUser({user : result.user}));
+      dispatch(setUser({ user: result.user }));
       toast.success(`Welcome back, ${result.user.name}! 🎉`);
       navigate("/home");
     } catch (err) {
-      toast.error('oops something wrong!!!!');
-      console.log(err)
+      toast.error("oops something wrong!!!!");
+      console.log(err);
     }
   };
 
@@ -70,13 +75,13 @@ const LoginForm = () => {
         const result = await googleLogin({ token: access_token }).unwrap();
 
         localStorage.setItem("userToken", result.accessToken);
-        dispatch(setUser({ user: result.user}));
+        dispatch(setUser({ user: result.user }));
         toast.success(`Welcome back, ${result.user.name}! 🎉`);
         navigate("/home");
       } catch (err) {
-        toast.error('oops something wrong!!!!');
+        toast.error("oops something wrong!!!!");
         console.error("Google login failed:", err);
-        navigate('/register')
+        navigate("/register");
       }
     },
     onError: (error) => console.log("Google Login Failed:", error),
@@ -95,7 +100,10 @@ const LoginForm = () => {
             {/* Email Input */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <EnvelopeIcon className="h-5 w-5 text-purple-300" aria-hidden="true" />
+                <EnvelopeIcon
+                  className="h-5 w-5 text-purple-300"
+                  aria-hidden="true"
+                />
               </div>
               <input
                 id="email-address"
@@ -107,13 +115,18 @@ const LoginForm = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              )}
             </div>
 
             {/* Password Input */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <LockClosedIcon className="h-5 w-5 text-purple-300" aria-hidden="true" />
+                <LockClosedIcon
+                  className="h-5 w-5 text-purple-300"
+                  aria-hidden="true"
+                />
               </div>
               <input
                 id="password"
@@ -125,7 +138,9 @@ const LoginForm = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+              )}
             </div>
           </div>
 
@@ -137,7 +152,10 @@ const LoginForm = () => {
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-[#ece6ff] bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 ease-in-out"
             >
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                <LockClosedIcon className="h-5 w-5 text-purple-300 group-hover:text-purple-200" aria-hidden="true" />
+                <LockClosedIcon
+                  className="h-5 w-5 text-purple-300 group-hover:text-purple-200"
+                  aria-hidden="true"
+                />
               </span>
               {isLoading ? "Logging in..." : "Sign in"}
             </button>
@@ -149,7 +167,8 @@ const LoginForm = () => {
               onClick={() => handleGoogleLogin()}
               className="mt-3 w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-800 bg-white hover:bg-gray-100 transition duration-200 ease-in-out"
             >
-              <FaGoogle className="h-5 w-5 mr-2 text-red-500" /> {/* Google Icon */}
+              <FaGoogle className="h-5 w-5 mr-2 text-red-500" />{" "}
+              {/* Google Icon */}
               Sign in with Google
             </button>
           </div>
@@ -161,15 +180,15 @@ const LoginForm = () => {
             </p>
           </Link>
         </form>
-
         {error && "data" in error && typeof error.data === "object" && (
-  <div className="mt-2 text-center text-sm text-red-600">
-    {(error.data as { error?: string })?.error || "Something went wrong. Please try again!"}
-  </div>
-)}      </div>
+          <div className="mt-2 text-center text-sm text-red-600">
+            {(error.data as { error?: string })?.error ||
+              "Something went wrong. Please try again!"}
+          </div>
+        )}{" "}
+      </div>
     </div>
   );
 };
 
 export default LoginForm;
-
