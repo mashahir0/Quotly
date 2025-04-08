@@ -78,7 +78,7 @@ export const postApi = createApi({
       invalidatesTags: ["SavedQuotes"],
     }),
     clearSavedQuotes: builder.mutation<void, void>({
-      query: () => ({ url: "/post/clear-quotes", method: "DELETE" }),
+      query: () => ({ url: "/post/clear-quotes", method: "POST" }),
     }),
     listsavedQuotes: builder.query<PostType[], void>({
       query: () => "/post/list-saved-quotes",

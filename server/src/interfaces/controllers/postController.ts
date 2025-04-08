@@ -211,7 +211,7 @@ async listSavedQuotes(req : AuthenticatedRequest , res : Response){
 },
 async clearSavedQuote(req:AuthenticatedRequest , res:Response){
   try {
-    console.log('1111')
+
     const userId = req.user?.id;
     
     if (!userId) {

@@ -47,10 +47,7 @@ router.delete(
 router.get("/list-saved-quotes",verifyToken(),postController.listSavedQuotes)
 
 //error need to fix (the route is not callling)
-router.delete("/clear-quotes",verifyToken(), (req, res, next) => {
-  console.log("✅ Route hit");
-  next();
-}, postController.clearSavedQuote);
+router.post("/clear-quotes",verifyToken() , postController.clearSavedQuote);
 
 
 export default router;

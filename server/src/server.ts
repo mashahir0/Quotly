@@ -123,27 +123,22 @@ const users: { [key: string]: string } = {};
 
 // Listen for WebSocket connections
 io.on("connection", (socket) => {
-  console.log(`🟢 User connected: ${socket.id}`);
 
   socket.on("register", (userId) => {
     if (!userId) return;
     users[userId] = socket.id;
     socket.join(userId);
-    console.log(`✅ User ${userId} joined their room.`);
   });
 
   // ✅ Handle typing event
   socket.on("typing", ({ receiverId }) => {
     if (!receiverId || !users[receiverId]) return;
-    console.log('typing')
     io.to(users[receiverId]).emit("typing");
   });
   socket.on("sendMessage", (data) => {
     const { senderId, receiverId, message } = data;
-    console.log(`📤 Sending message from ${senderId} to ${receiverId}`);
 
     if (!senderId || !receiverId || !message) {
-      console.error("❌ Invalid message data:", data);
       return;
     }
 
@@ -157,7 +152,6 @@ io.on("connection", (socket) => {
     io.to(senderId).emit("newMessage", data);
   });
   socket.on("disconnect", () => {
-    console.log(`🔴 User disconnected: ${socket.id}`);
     const userId = Object.keys(users).find((key) => users[key] === socket.id);
     if (userId) delete users[userId]; // Remove user on disconnect
   });

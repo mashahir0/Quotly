@@ -7,6 +7,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 type ModalState = {
   open: boolean;
@@ -24,6 +25,8 @@ const SavedQuotes  = () => {
     type: "single",
     postId: null,
   });
+
+  const navigate = useNavigate()
 
   const handleRemove = async (postId: string) => {
     try {
@@ -55,8 +58,21 @@ const SavedQuotes  = () => {
   };
 
   if (isLoading) return <div className="text-center text-gray-300">Loading saved quotes...</div>;
+
   if (isError || !data?.length)
-    return <div className="text-center text-gray-400">No saved quotes.</div>;
+    return (
+      <div className="text-center text-gray-400 flex flex-col items-center justify-center gap-4 mt-20">
+        <span className="text-6xl">📭</span>
+        <p className="text-xl">You haven't saved any quotes yet.</p>
+        <button
+         onClick={() => navigate("/")}
+          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+        >
+          Explore Quotes
+        </button>
+      </div>
+    );
+  
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 max-w-6xl mx-auto">
