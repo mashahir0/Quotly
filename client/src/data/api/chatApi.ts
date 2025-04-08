@@ -47,6 +47,7 @@ export const chatApi = createApi({
       //   query: () => "/chat/user-list",
       // }),
       getUsersChat: builder.query<{
+        lastId: null;
         users: { users: any[]; lastId: string | null };
       }, { search?: string; page?: number; limit?: number; lastId?: string | null }>({
         query: ({ search = "", page = 1, limit = 10, lastId = null }) => ({

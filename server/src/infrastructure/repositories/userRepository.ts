@@ -29,30 +29,48 @@ const UserRepository = {
   async updateProfile(userId: string, updateData: Partial<IUser>) {
     return await userModel.findByIdAndUpdate(userId, updateData, { new: true });
   },
-  async getUsersForChat(search: string, page: number, limit: number, lastId?: string) {
-    const query: any = {};
+//   async getUsersForChat(search: string, page: number, limit: number, lastId?: string) {
+//     const query: any = {};
 
-    // ✅ Optimized Search using text index (if available)
-    if (search) {
-        query.name = { $regex: `^${search}`, $options: "i" }; // Starts with search term
-    }
+//     // ✅ Optimized Search using text index (if available)
+//     if (search) {
+//         query.name = { $regex: `^${search}`, $options: "i" }; // Starts with search term
+//     }
 
-    // ✅ Efficient Pagination using `_id`
-    if (lastId) {
-        query._id = { $gt: lastId }; // Fetch users greater than last `_id`
-    }
+//     // ✅ Efficient Pagination using `_id`
+//     if (lastId) {
+//         query._id = { $gt: lastId }; // Fetch users greater than last `_id`
+//     }
 
-    const users = await userModel
-        .find(query)
-        .sort({ _id: 1 }) // ✅ Sorting by `_id` prevents overlaps
-        .limit(limit)
-        .select("_id name photo")
-        .lean();
+//     const users = await userModel
+//         .find(query)
+//         .sort({ _id: 1 }) // ✅ Sorting by `_id` prevents overlaps
+//         .limit(limit)
+//         .select("_id name photo")
+//         .lean();
 
-    return {
-        users,
-        lastId: users.length > 0 ? users[users.length - 1]._id : null, // ✅ Return last `_id` for frontend pagination
-    };
+//     return {
+//         users,
+//         lastId: users.length > 0 ? users[users.length - 1]._id : null, // ✅ Return last `_id` for frontend pagination
+//     };
+// }
+async searchUsers(search: string, page: number, limit: number) {
+  const query = {
+    name: { $regex: `^${search}`, $options: "i" },
+  };
+
+  const users = await userModel
+    .find(query)
+    .sort({ _id: 1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .select("_id name photo")
+    .lean();
+
+  return {
+    users,
+    lastId: users.length > 0 ? users[users.length - 1]._id : null,
+  };
 }
 
 

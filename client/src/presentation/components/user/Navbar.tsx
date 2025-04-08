@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
 
   // Get user from Redux store
   const user = useSelector((state: RootState) => state?.auth?.user);
-  console.log(user)
+
   const handleLogout = () => {
     localStorage.removeItem("userToken");
     dispatch(clearQuote())

@@ -85,15 +85,19 @@ async sendMessage(req: AuthenticatedRequest, res: Response) {
     }
   },
 
-  async getUsersForChat(req:Request, res: Response){
+  async getUsersForChat(req: AuthenticatedRequest, res: Response) {
     try {
-      const { search = "", page = "1", limit = "10" } = req.query;
-      const users = await chatService.getUsersForChat(search as string, Number(page), Number(limit));
+      const userId = req.user?.id;
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+  
+      const users = await chatService.getRecentUsers(userId);
       res.json({ users });
-    } catch (error: any) {
-      res.status(500).json({ message: "Error fetching users", error: error.message });
+    } catch (error) {
+      console.error("Error getting recent chat users", error);
+      res.status(500).json({ message: "Server error" });
     }
   }
+  
 };
 
 export default chatController;
