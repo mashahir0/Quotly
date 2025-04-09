@@ -14,8 +14,12 @@ const chatService = {
   async markMessagesAsSeen(senderId: string, receiverId: string) {
     return await chatRepository.markMessagesAsSeen(senderId, receiverId);
   },
-  async getRecentUsers(userId: string) {
-    return await chatRepository.getRecentChatUsers(userId);
+  async getRecentUsers(userId: string, search: string, page: number, limit: number) {
+    if (search.trim()) {
+      return await UserRepository.searchUsers(search, page, limit);
+    } else {
+      return await chatRepository.getRecentChatUsers(userId, limit);
+    }
   }
   
 };

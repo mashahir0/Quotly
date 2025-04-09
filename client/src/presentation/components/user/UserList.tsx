@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useLazyGetUsersChatQuery } from "../../../data/api/chatApi";
+import { useLazyGetUsersChatQuery, useMarkMessagesAsSeenMutation } from "../../../data/api/chatApi";
 import { motion, AnimatePresence } from "framer-motion";
 
 type User = {
@@ -25,8 +25,14 @@ const UserList: React.FC<UserListProps> = ({
   const [lastId, setLastId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
-  const [triggerGetUsers, { data, isLoading, isError }] =
-    useLazyGetUsersChatQuery();
+  const [triggerGetUsers, { data, isLoading, isError }] =useLazyGetUsersChatQuery();
+  const [markSeen] = useMarkMessagesAsSeenMutation();
+
+  const handleSelectUser = (userId: string) => {
+    onSelectUser(userId);
+    markSeen(userId); // mark messages as seen
+  };
+
   console.log(data);
 
   // 🔄 Debounce search input
@@ -51,12 +57,12 @@ const UserList: React.FC<UserListProps> = ({
 
   // 📌 Process API response
   useEffect(() => {
-    if (!data || !Array.isArray(data.users)) {
+    if (!data || !Array.isArray(data.users.users)) {
       console.error("❌ Unexpected API response format:", data);
       return;
     }
 
-    const fetchedUsers = data.users;
+    const fetchedUsers = data.users.users;
 
     setUsers((prevUsers) => {
       if (!lastId) {
@@ -129,29 +135,42 @@ const UserList: React.FC<UserListProps> = ({
         )}
 
         <ul>
-          <AnimatePresence>
-            {users.map((user: User, index: number) => (
-              <motion.li
-                key={user._id}
-                ref={index === users.length - 1 ? lastUserRef : null}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.3 }}
-                className={`flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-700 ${
-                  selectedUserId === user._id ? "bg-blue-600" : "text-white"
-                }`}
-                onClick={() => onSelectUser(user._id)}
-              >
-                <img
-                  src={user.photo || "/default-avatar.png"}
-                  alt={user.name}
-                  className="w-10 h-10 rounded-full mr-3"
-                />
-                <span>{user.name}</span>
-              </motion.li>
-            ))}
-          </AnimatePresence>
+        <AnimatePresence>
+  {users.map((user: any, index: number) => {
+    const showDot = user.seen === false && user.isSender === false;
+
+    return (
+      <motion.li
+        key={user._id}
+        ref={index === users.length - 1 ? lastUserRef : null}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 20 }}
+        transition={{ duration: 0.3 }}
+        className={`flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-700 ${
+          selectedUserId === user._id ? "bg-blue-600" : "text-white"
+        }`}
+        onClick={() => handleSelectUser(user._id)}
+
+      >
+        <div className="flex items-center">
+          <img
+            src={user.photo || "/default-avatar.png"}
+            alt={user.name}
+            className="w-10 h-10 rounded-full mr-3"
+          />
+          <span>{user.name}</span>
+        </div>
+
+        {/* 🔵 Seen indicator */}
+        {showDot && (
+          <div className="w-2.5 h-2.5 bg-blue-500 rounded-full mr-2" />
+        )}
+      </motion.li>
+    );
+  })}
+</AnimatePresence>
+
         </ul>
 
         {/* Infinite scroll loading indicator */}

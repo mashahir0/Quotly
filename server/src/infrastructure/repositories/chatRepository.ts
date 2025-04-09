@@ -28,7 +28,7 @@ const chatRepository = {
         { $set: { seen: true } }
       );
     },
-    async getRecentChatUsers(userId: string) {
+    async getRecentChatUsers(userId: string, limit: number) {
       const objectId = new mongoose.Types.ObjectId(userId);
     
       const recentChats = await chatModel.aggregate([
@@ -41,19 +41,26 @@ const chatRepository = {
           }
         },
         {
-          $sort: { createdAt: -1 } // or updatedAt if it's updated properly
-        },
-        {
-          $group: {
-            _id: {
+          $addFields: {
+            chatWith: {
               $cond: [
                 { $eq: ["$senderId", objectId] },
                 "$receiverId",
                 "$senderId"
               ]
             },
-            message: { $first: "$message" },
-            createdAt: { $first: "$createdAt" }
+            isSender: { $eq: ["$senderId", objectId] }
+          }
+        },
+        {
+          $sort: { createdAt: -1 }
+        },
+        {
+          $group: {
+            _id: "$chatWith",
+            seen: { $first: "$seen" },
+            isSender: { $first: "$isSender" },
+            lastMessageAt: { $first: "$createdAt" }
           }
         },
         {
@@ -70,14 +77,16 @@ const chatRepository = {
             _id: "$user._id",
             name: "$user.name",
             photo: "$user.photo",
-            lastMessage: "$message",
-            lastMessageAt: "$createdAt"
+            seen: 1,
+            isSender: 1,
+            lastMessageAt: 1
           }
         },
-        { $sort: { lastMessageAt: -1 } } // final sort for UI
+        { $sort: { lastMessageAt: -1 } },
+        { $limit: limit }
       ]);
     
-      return recentChats;
+      return { users: recentChats };
     }
     
     
