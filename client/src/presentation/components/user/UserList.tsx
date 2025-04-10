@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useLazyGetUsersChatQuery, useMarkMessagesAsSeenMutation } from "../../../data/api/chatApi";
 import { motion, AnimatePresence } from "framer-motion";
+import socket from "../../../utils/socket";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../domain/redux/store";
 
 type User = {
   _id: string;
@@ -27,13 +30,45 @@ const UserList: React.FC<UserListProps> = ({
   const observer = useRef<IntersectionObserver | null>(null);
   const [triggerGetUsers, { data, isLoading, isError }] =useLazyGetUsersChatQuery();
   const [markSeen] = useMarkMessagesAsSeenMutation();
+  const messagesender = useSelector((state : RootState)=> state.auth.user?._id)
+
 
   const handleSelectUser = (userId: string) => {
+    if (!messagesender) {
+      console.warn("❌ messagesender is not ready yet.");
+      return;
+    }
+  
     onSelectUser(userId);
-    markSeen(userId); // mark messages as seen
+    markSeen(userId); // optional backend API
+  
+    const receiverId = userId;
+    const senderId = messagesender;
+  
+    console.log("📤 Emitting markSeen:", { senderId, receiverId });
+    socket.emit("markSeen", { senderId, receiverId });
   };
+  
+useEffect(() => {
+  socket.on("connect", () => {
+    console.log("🟢 Connected to socket:", socket.id);
+  });
 
-  console.log(data);
+  socket.on("disconnect", () => {
+    console.log("🔴 Disconnected from socket");
+  });
+
+  return () => {
+    socket.off("connect");
+    socket.off("disconnect");
+  };
+}, []);
+
+
+
+  
+
+
 
   // 🔄 Debounce search input
   useEffect(() => {
@@ -54,6 +89,8 @@ const UserList: React.FC<UserListProps> = ({
       lastId: null,
     });
   }, [debouncedSearch]);
+
+  
 
   // 📌 Process API response
   useEffect(() => {
@@ -102,6 +139,7 @@ const UserList: React.FC<UserListProps> = ({
     },
     [isLoading, hasMore, debouncedSearch, lastId]
   );
+
 
   return (
     <div className="w-1/3 bg-gray-900 p-4 rounded-lg h-full flex flex-col">
@@ -154,11 +192,13 @@ const UserList: React.FC<UserListProps> = ({
 
       >
         <div className="flex items-center">
-          <img
-            src={user.photo || "/default-avatar.png"}
-            alt={user.name}
-            className="w-10 h-10 rounded-full mr-3"
-          />
+        {user.photo ? (
+                  <img src={user.photo} alt="Profile" className="w-12 h-12 rounded-full object-cover border-2 border-gray-500" />
+                ) : (
+                  <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
+                    <span className="text-gray-300 text-lg">{user.name[0]}</span>
+                  </div>
+          )}
           <span>{user.name}</span>
         </div>
 

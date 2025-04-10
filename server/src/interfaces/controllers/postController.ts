@@ -3,6 +3,7 @@ import postServices from "../../usecases/postService";
 import UserRepository from "../../infrastructure/repositories/userRepository";
 import { io } from "../../server";
 
+
 interface AuthenticatedRequest extends Request {
   user?: { id: string; name: string; email: string; role: string };
 }

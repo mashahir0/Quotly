@@ -4,7 +4,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 export const chatApi = createApi({
   reducerPath: "chatApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Messages"],
+  tagTypes: ["Messages","ChatUsers"],
   endpoints: (builder) => ({
     sendMessage: builder.mutation<
       void,
@@ -30,7 +30,7 @@ export const chatApi = createApi({
         url: `/chat/mark-seen/${receiverId}`,
         method: "PUT",
       }),
-      invalidatesTags: ["Messages"],
+      invalidatesTags: ["ChatUsers"],
     }),
     getUsersChat: builder.query<
       {
@@ -44,6 +44,7 @@ export const chatApi = createApi({
         params: { search, page, limit, lastId },
       }),
       keepUnusedDataFor: 5,
+      providesTags : ["ChatUsers"]
     }),
   }),
 });

@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/db";
 import http from "http"; // Required for Socket.io
 import { Server } from "socket.io";
+import chatRepository from "./infrastructure/repositories/chatRepository";
 
 dotenv.config();
 const app = express();
@@ -67,6 +68,22 @@ io.on("connection", (socket) => {
     io.to(receiverId).emit("newMessage", data);
     io.to(senderId).emit("newMessage", data);
   });
+
+  socket.on("markSeen", async ({ senderId, receiverId }) => {
+    console.log("📥 Received markSeen:", { senderId, receiverId });
+  
+    if (!senderId || !receiverId) return;
+  
+    await chatRepository.markMessagesAsSeen(receiverId, senderId);
+  
+    if (users[senderId]) {
+      console.log("📤 Emitting messagesSeen to:", senderId);
+      io.to(users[senderId]).emit("messagesSeen", {
+        from: receiverId,
+      });
+    }
+  });
+  
   socket.on("disconnect", () => {
     const userId = Object.keys(users).find((key) => users[key] === socket.id);
     if (userId) delete users[userId]; // Remove user on disconnect
@@ -82,5 +99,8 @@ connectDB();
 
 export { server, io };
 server.listen(3000, () => console.log("🚀 Server running on port 3000"));
+
+
+
 
 

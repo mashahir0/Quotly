@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import chatService from "../../usecases/chatServices";
-import { io } from "../../server";
-import mongoose from "mongoose";
+
 
 
 
@@ -34,7 +33,6 @@ const chatController = {
 //   },
 async sendMessage(req: AuthenticatedRequest, res: Response) {
     try {
-        console.log('send message controller triggered');
         const { receiverId, message } = req.body;
         const senderId = req.user?.id;
 
@@ -44,7 +42,6 @@ async sendMessage(req: AuthenticatedRequest, res: Response) {
 
         // Store message in DB
         const newMessage = await chatService.sendMessage(senderId, receiverId, message);
-        console.log(`📩 Stored message from ${senderId} to ${receiverId}:`, newMessage);
 
         // ✅ Do NOT emit via WebSocket (handled separately)
         res.status(201).json(newMessage);
