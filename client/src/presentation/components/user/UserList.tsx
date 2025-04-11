@@ -49,20 +49,7 @@ const UserList: React.FC<UserListProps> = ({
     socket.emit("markSeen", { senderId, receiverId });
   };
   
-useEffect(() => {
-  socket.on("connect", () => {
-    console.log("🟢 Connected to socket:", socket.id);
-  });
 
-  socket.on("disconnect", () => {
-    console.log("🔴 Disconnected from socket");
-  });
-
-  return () => {
-    socket.off("connect");
-    socket.off("disconnect");
-  };
-}, []);
 
 
 
@@ -93,30 +80,30 @@ useEffect(() => {
   
 
   // 📌 Process API response
-  useEffect(() => {
-    if (!data || !Array.isArray(data.users.users)) {
-      console.error("❌ Unexpected API response format:", data);
-      return;
-    }
+  // useEffect(() => {
+  //   if (!data || !Array.isArray(data.users.users)) {
+  //     console.error("❌ Unexpected API response format:", data);
+  //     return;
+  //   }
 
-    const fetchedUsers = data.users.users;
+  //   const fetchedUsers = data.users.users;
 
-    setUsers((prevUsers) => {
-      if (!lastId) {
-        return fetchedUsers; // Reset if new search or initial load
-      }
+  //   setUsers((prevUsers) => {
+  //     if (!lastId) {
+  //       return fetchedUsers; // Reset if new search or initial load
+  //     }
 
-      const newUsers = fetchedUsers.filter(
-        (user) =>
-          !prevUsers.some((existingUser) => existingUser._id === user._id)
-      );
+  //     const newUsers = fetchedUsers.filter(
+  //       (user) =>
+  //         !prevUsers.some((existingUser) => existingUser._id === user._id)
+  //     );
 
-      return [...prevUsers, ...newUsers]; // Append new users
-    });
+  //     return [...prevUsers, ...newUsers]; // Append new users
+  //   });
 
-    setLastId(data.lastId || null);
-    setHasMore(fetchedUsers.length > 0);
-  }, [data]);
+  //   setLastId(data.lastId || null);
+  //   setHasMore(fetchedUsers.length > 0);
+  // }, [data]);
 
   // 🔁 Infinite scroll observer
   const lastUserRef = useCallback(
@@ -174,7 +161,7 @@ useEffect(() => {
 
         <ul>
         <AnimatePresence>
-  {users.map((user: any, index: number) => {
+  {data?.users.users.map((user: any, index: number) => {
     const showDot = user.seen === false && user.isSender === false;
 
     return (

@@ -42,21 +42,37 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
     if (!receiverId) return;
 
     const handleNewMessage = (message: any) => {
+      const currentUserId = user?.userData?._id;
+    
+      // ✅ Only add messages that are between the current user and this chat's receiver
+      const isRelevant =
+        (message.senderId === currentUserId && message.receiverId === receiverId) ||
+        (message.receiverId === currentUserId && message.senderId === receiverId);
+    
+      if (!isRelevant) return;
+    
       setChatMessages((prev) => {
         const isDuplicate = prev.some((msg) => msg._id === message._id);
         return isDuplicate ? prev : [...prev, message];
       });
-
-      scrollToBottom(); // Scroll when new message comes
+    
+      scrollToBottom();
     };
+    
 
-    const handleTyping = () => {
+    const handleTyping = (data: { senderId: string; receiverId: string }) => {
+      const currentUserId = user?.userData?._id;
+    
+      // ✅ Only show typing if it's from the person you're currently chatting with
+      if (data?.senderId !== receiverId || data?.receiverId !== currentUserId) return;
+    
       setIsTyping(true);
       scrollToBottom();
-      // ✅ Reset typing timeout to prevent flickering
+    
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 2000);
     };
+    
 
     socket.off("newMessage").on("newMessage", handleNewMessage);
     socket.off("typing").on("typing", handleTyping);
@@ -80,7 +96,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
   const handleTyping = () => {
     if (!receiverId) return;
 
-    socket.emit("typing", { receiverId });
+    socket.emit("typing", {
+      senderId: user?.userData?._id,
+      receiverId,
+    });
+    
 
     // Clear existing timeout
 

@@ -48,26 +48,46 @@ io.on("connection", (socket) => {
   });
 
   // ✅ Handle typing event
-  socket.on("typing", ({ receiverId }) => {
-    if (!receiverId || !users[receiverId]) return;
-    io.to(users[receiverId]).emit("typing");
+  socket.on("typing", ({ senderId, receiverId }) => {
+    if (!senderId || !receiverId || !users[receiverId]) return;
+  
+    io.to(users[receiverId]).emit("typing", { senderId, receiverId });
   });
-  socket.on("sendMessage", (data) => {
-    const { senderId, receiverId, message } = data;
+  
+  // socket.on("sendMessage", (data) => {
+  //   const { senderId, receiverId, message } = data;
 
-    if (!senderId || !receiverId || !message) {
-      return;
-    }
+  //   if (!senderId || !receiverId || !message) {
+  //     return;
+  //   }
 
   
-    // Ensure users are in their rooms
-    socket.join(senderId);
-    socket.join(receiverId);
+  //   // Ensure users are in their rooms
+  //   socket.join(senderId);
+  //   socket.join(receiverId);
 
-    // ✅ Emit message only ONCE to each recipient
-    io.to(receiverId).emit("newMessage", data);
-    io.to(senderId).emit("newMessage", data);
+  //   // ✅ Emit message only ONCE to each recipient
+  //   io.to(receiverId).emit("newMessage", data);
+  //   io.to(senderId).emit("newMessage", data);
+  // });
+  socket.on("sendMessage", (data) => {
+    const { senderId, receiverId, message } = data;
+  
+    if (!senderId || !receiverId || !message) return;
+  
+    // Send only to the specific sockets
+    const receiverSocketId = users[receiverId];
+    const senderSocketId = users[senderId];
+  
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", data);
+    }
+  
+    if (senderSocketId && senderSocketId !== receiverSocketId) {
+      io.to(senderSocketId).emit("newMessage", data);
+    }
   });
+  
 
   socket.on("markSeen", async ({ senderId, receiverId }) => {
     console.log("📥 Received markSeen:", { senderId, receiverId });
