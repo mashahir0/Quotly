@@ -12,10 +12,11 @@ const UserProfile = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(user?.userData?.photo || null);
   const [isLoading, setIsLoading] = useState(false); // 🔹 Track loading state
-  console.log(user)
+  console.log(user,'24343432gdgfdgdf')
 
 
   useEffect(() => {
+    refetch()
     console.log("Checking user data:", user);
   
     if (user?.userData?._id) {

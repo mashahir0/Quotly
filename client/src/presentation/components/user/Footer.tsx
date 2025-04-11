@@ -1,4 +1,4 @@
-import { Facebook, Twitter, Instagram, Heart } from "lucide-react";
+import { Github, Linkedin, Send, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -50,19 +50,31 @@ const Footer = () => {
 
           {/* Social Media Links */}
           <div>
-            <h2 className="text-xl font-bold text-white">Follow Us</h2>
-            <div className="flex justify-center md:justify-start space-x-4 mt-3">
-              <a href="#" className="hover:text-white transition">
-                <Facebook className="w-6 h-6" />
-              </a>
-              <a href="#" className="hover:text-white transition">
-                <Twitter className="w-6 h-6" />
-              </a>
-              <a href="#" className="hover:text-white transition">
-                <Instagram className="w-6 h-6" />
-              </a>
-            </div>
-          </div>
+  <h2 className="text-xl font-bold text-white">Follow Us</h2>
+  <div className="flex justify-center md:justify-start space-x-4 mt-3">
+    <Link
+      to="https://www.linkedin.com/in/mashahir-p-120a60265/"
+      target="_blank"
+      className="hover:text-white transition"
+    >
+      <Linkedin className="w-6 h-6" />
+    </Link>
+    <Link
+      to="https://github.com/mashahir0"
+      target="_blank"
+      className="hover:text-white transition"
+    >
+      <Github className="w-6 h-6" />
+    </Link>
+    <Link
+      to="#"
+      target="_blank"
+      className="hover:text-white transition"
+    >
+      <Send className="w-6 h-6" />
+    </Link>
+  </div>
+</div>
         </div>
 
         {/* Copyright Section */}

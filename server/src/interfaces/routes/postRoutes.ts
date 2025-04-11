@@ -31,7 +31,7 @@ router.put(
   verifyToken(),
   postController.togglePostPrivacy
 );
-router.get("/top-liked-profiles", postController.getTopLikedProfiles);
+router.get("/top-liked-profiles",verifyToken(), postController.getTopLikedProfiles);
 router.get("/quotes/:shareId", postController.getSharedQuote);
 router.get(
   "/saved-quotes",
