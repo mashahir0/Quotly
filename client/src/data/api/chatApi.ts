@@ -53,5 +53,5 @@ export const {
   useGetMessagesQuery,
   useMarkMessagesAsSeenMutation,
   useSendMessageMutation,
-  useLazyGetUsersChatQuery,
+  useGetUsersChatQuery,
 } = chatApi;

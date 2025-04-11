@@ -54,22 +54,7 @@ io.on("connection", (socket) => {
     io.to(users[receiverId]).emit("typing", { senderId, receiverId });
   });
   
-  // socket.on("sendMessage", (data) => {
-  //   const { senderId, receiverId, message } = data;
 
-  //   if (!senderId || !receiverId || !message) {
-  //     return;
-  //   }
-
-  
-  //   // Ensure users are in their rooms
-  //   socket.join(senderId);
-  //   socket.join(receiverId);
-
-  //   // ✅ Emit message only ONCE to each recipient
-  //   io.to(receiverId).emit("newMessage", data);
-  //   io.to(senderId).emit("newMessage", data);
-  // });
   socket.on("sendMessage", (data) => {
     const { senderId, receiverId, message } = data;
   
@@ -81,10 +66,12 @@ io.on("connection", (socket) => {
   
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", data);
+      io.to(receiverSocketId).emit("userListUpdate");
     }
   
     if (senderSocketId && senderSocketId !== receiverSocketId) {
       io.to(senderSocketId).emit("newMessage", data);
+      io.to(receiverSocketId).emit("userListUpdate");
     }
   });
   
@@ -101,6 +88,7 @@ io.on("connection", (socket) => {
       io.to(users[senderId]).emit("messagesSeen", {
         from: receiverId,
       });
+      io.to(users[senderId]).emit("userListUpdate");
     }
   });
   

@@ -1,5 +1,10 @@
+
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useLazyGetUsersChatQuery, useMarkMessagesAsSeenMutation } from "../../../data/api/chatApi";
+import {
+  useGetUsersChatQuery,
+  useMarkMessagesAsSeenMutation,
+} from "../../../data/api/chatApi";
 import { motion, AnimatePresence } from "framer-motion";
 import socket from "../../../utils/socket";
 import { useSelector } from "react-redux";
@@ -9,8 +14,8 @@ type User = {
   _id: string;
   name: string;
   photo?: string;
-  lastMessage?: string;
-  lastMessageAt?: string;
+  seen?: boolean;
+  isSender?: boolean;
 };
 
 interface UserListProps {
@@ -28,36 +33,27 @@ const UserList: React.FC<UserListProps> = ({
   const [lastId, setLastId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef<IntersectionObserver | null>(null);
-  const [triggerGetUsers, { data, isLoading, isError }] =useLazyGetUsersChatQuery();
-  const [markSeen] = useMarkMessagesAsSeenMutation();
-  const messagesender = useSelector((state : RootState)=> state.auth.user?._id)
 
-
-  const handleSelectUser = (userId: string) => {
-    if (!messagesender) {
-      console.warn("❌ messagesender is not ready yet.");
-      return;
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetUsersChatQuery(
+    { search: debouncedSearch, page: 1, limit: 10, lastId },
+    {
+      skip: false,
+      refetchOnFocus: true,
     }
-  
-    onSelectUser(userId);
-    markSeen(userId); // optional backend API
-  
-    const receiverId = userId;
-    const senderId = messagesender;
-  
-    console.log("📤 Emitting markSeen:", { senderId, receiverId });
-    socket.emit("markSeen", { senderId, receiverId });
-  };
+  );
   
 
+  const [markSeen] = useMarkMessagesAsSeenMutation();
+  const messagesender = useSelector(
+    (state: RootState) => state.auth.user?._id
+  );
 
-
-
-  
-
-
-
-  // 🔄 Debounce search input
+  // ✅ Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search.trim());
@@ -65,72 +61,72 @@ const UserList: React.FC<UserListProps> = ({
     return () => clearTimeout(handler);
   }, [search]);
 
-  // 🔄 Fetch users on debounced search
+  // ✅ Handle data update from query
   useEffect(() => {
-    setUsers([]);
-    setLastId(null);
-    triggerGetUsers({
-      search: debouncedSearch,
-      page: 1,
-      limit: 10,
-      lastId: null,
-    });
-  }, [debouncedSearch]);
+    if (!data || !Array.isArray(data.users?.users)) return;
 
+    const fetchedUsers = data.users.users;
+
+    setUsers((prev) => {
+      if (!lastId) return fetchedUsers;
+      const newUsers = fetchedUsers.filter(
+        (user) => !prev.some((u) => u._id === user._id)
+      );
+      return [...prev, ...newUsers];
+    });
+
+    setLastId(data.lastId || null);
+    setHasMore(fetchedUsers.length > 0);
+  }, [data]);
+
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      console.log("🔁 userListUpdate received – refetching chat list...");
+      refetch();
+    };
+  
+    socket.on("userListUpdate", handleUserUpdate);
+  
+    return () => {
+      socket.off("userListUpdate", handleUserUpdate);
+    };
+  }, [refetch]);
+  
+  
   
 
-  // 📌 Process API response
-  // useEffect(() => {
-  //   if (!data || !Array.isArray(data.users.users)) {
-  //     console.error("❌ Unexpected API response format:", data);
-  //     return;
-  //   }
-
-  //   const fetchedUsers = data.users.users;
-
-  //   setUsers((prevUsers) => {
-  //     if (!lastId) {
-  //       return fetchedUsers; // Reset if new search or initial load
-  //     }
-
-  //     const newUsers = fetchedUsers.filter(
-  //       (user) =>
-  //         !prevUsers.some((existingUser) => existingUser._id === user._id)
-  //     );
-
-  //     return [...prevUsers, ...newUsers]; // Append new users
-  //   });
-
-  //   setLastId(data.lastId || null);
-  //   setHasMore(fetchedUsers.length > 0);
-  // }, [data]);
-
-  // 🔁 Infinite scroll observer
+  // ✅ Infinite scroll logic
   const lastUserRef = useCallback(
     (node: HTMLLIElement | null) => {
       if (isLoading || !hasMore) return;
-
       if (observer.current) observer.current.disconnect();
+
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
-          triggerGetUsers({
-            search: debouncedSearch,
-            page: 1,
-            limit: 10,
-            lastId,
-          });
+          setLastId(users[users.length - 1]?._id || null);
         }
       });
 
       if (node) observer.current.observe(node);
     },
-    [isLoading, hasMore, debouncedSearch, lastId]
+    [isLoading, hasMore, users]
   );
 
+  // ✅ Handle select
+  const handleSelectUser = (userId: string) => {
+    if (!messagesender) return;
+
+    onSelectUser(userId);
+    markSeen(userId);
+
+    socket.emit("markSeen", {
+      senderId: messagesender,
+      receiverId: userId,
+    });
+  };
 
   return (
     <div className="w-1/3 bg-gray-900 p-4 rounded-lg h-full flex flex-col">
-      {/* 🔍 Search input */}
       <div className="mb-3">
         <label
           htmlFor="user-search"
@@ -146,61 +142,67 @@ const UserList: React.FC<UserListProps> = ({
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setLastId(null); // Reset pagination
+            setUsers([]);
+            setLastId(null);
           }}
         />
       </div>
 
-      {/* 📜 User list */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {isLoading && <p className="text-white">Loading users...</p>}
+        {isLoading && users.length === 0 && (
+          <p className="text-white">Loading users...</p>
+        )}
         {isError && <p className="text-red-500">Error loading users</p>}
-        {users.length === 0 && !isLoading && !isError && (
+        {!isLoading && users.length === 0 && !isError && (
           <p className="text-gray-400 text-center">No users found</p>
         )}
 
         <ul>
-        <AnimatePresence>
-  {data?.users.users.map((user: any, index: number) => {
-    const showDot = user.seen === false && user.isSender === false;
+          <AnimatePresence>
+            {users.map((user, index) => {
+              const showDot = user.seen === false && user.isSender === false;
 
-    return (
-      <motion.li
-        key={user._id}
-        ref={index === users.length - 1 ? lastUserRef : null}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
-        transition={{ duration: 0.3 }}
-        className={`flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-700 ${
-          selectedUserId === user._id ? "bg-blue-600" : "text-white"
-        }`}
-        onClick={() => handleSelectUser(user._id)}
-
-      >
-        <div className="flex items-center">
-        {user.photo ? (
-                  <img src={user.photo} alt="Profile" className="w-12 h-12 rounded-full object-cover border-2 border-gray-500" />
-                ) : (
-                  <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
-                    <span className="text-gray-300 text-lg">{user.name[0]}</span>
+              return (
+                <motion.li
+                  key={user._id}
+                  ref={index === users.length - 1 ? lastUserRef : null}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                  className={`flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-700 ${
+                    selectedUserId === user._id
+                      ? "bg-blue-600 text-white"
+                      : "text-white"
+                  }`}
+                  onClick={() => handleSelectUser(user._id)}
+                >
+                  <div className="flex items-center gap-2">
+                    {user.photo ? (
+                      <img
+                        src={user.photo}
+                        alt="Profile"
+                        className="w-12 h-12 rounded-full object-cover border-2 border-gray-500"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
+                        <span className="text-gray-300 text-lg">
+                          {user.name[0]}
+                        </span>
+                      </div>
+                    )}
+                    <span>{user.name}</span>
                   </div>
-          )}
-          <span>{user.name}</span>
-        </div>
 
-        {/* 🔵 Seen indicator */}
-        {showDot && (
-          <div className="w-2.5 h-2.5 bg-blue-500 rounded-full mr-2" />
-        )}
-      </motion.li>
-    );
-  })}
-</AnimatePresence>
-
+                  {showDot && (
+                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full mr-2" />
+                  )}
+                </motion.li>
+              );
+            })}
+          </AnimatePresence>
         </ul>
 
-        {/* Infinite scroll loading indicator */}
         {hasMore && !isLoading && (
           <p className="text-gray-500 text-center mt-2">Loading more...</p>
         )}
