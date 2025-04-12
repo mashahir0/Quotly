@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import userService from "../../usecases/userService";
 import tokenService from "../../usecases/tokenService";
 
+
 interface AuthenticatedRequest extends Request {
   user?: { id: string; name: string; email: string; role: string }; 
 }
@@ -15,6 +16,9 @@ const authController = {
       res.status(400).json({ error: error.message });
     }
   },
+  
+  
+  
 
   async login(req: Request, res: Response) {
     try {

@@ -4,6 +4,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQueryWithReauth,
+  tagTypes: ["LoadUser"],
   endpoints: (builder) => ({
     register: builder.mutation<
       any,
@@ -22,6 +23,7 @@ export const userApi = createApi({
         method: "POST",
         body: credentials,
       }),
+      invalidatesTags : ["LoadUser"]
     }),
     googleLogin: builder.mutation<any, { token: string }>({
       query: (googleData) => ({
@@ -29,9 +31,11 @@ export const userApi = createApi({
         method: "POST",
         body: googleData,
       }),
+      invalidatesTags : ["LoadUser"]
     }),
     getDetails: builder.query<any, void>({
       query: () => "/get-details",
+      providesTags :["LoadUser"]
     }),
     updateProfile: builder.mutation<{ message: string }, FormData>({
       query: (formData) => ({

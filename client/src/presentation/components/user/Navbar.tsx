@@ -5,6 +5,7 @@ import { RootState } from "../../../domain/redux/store"; // Adjust path as neede
 import { clearUser } from "../../../domain/redux/slilce/userSlice";
 import { useNavigate } from "react-router-dom";
 import { clearQuote } from "../../../domain/redux/slilce/savedQuotesSlice";
+import { userApi } from "../../../data/api/userApi";
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -19,6 +20,7 @@ const Navbar: React.FC = () => {
     localStorage.removeItem("userToken");
     dispatch(clearQuote());
     dispatch(clearUser());
+    dispatch(userApi.util.resetApiState())
     navigate("/login");
   };
 

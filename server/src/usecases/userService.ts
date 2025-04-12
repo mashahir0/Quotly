@@ -99,6 +99,7 @@ const userService = {
 
     return await UserRepository.updateProfile(userId, updateData);
   },
+  
 };
 
 export default userService;

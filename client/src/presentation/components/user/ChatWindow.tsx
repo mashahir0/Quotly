@@ -5,8 +5,10 @@ import {
   useGetMessagesQuery,
   useSendMessageMutation,
 } from "../../../data/api/chatApi";
-import { useGetDetailsQuery } from "../../../data/api/userApi";
+
 import socket from "../../../utils/socket";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../domain/redux/store";
 
 interface ChatWindowProps {
   receiverId: string | null;
@@ -16,7 +18,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
   const { data: messages, isLoading } = useGetMessagesQuery(receiverId || "", {
     skip: !receiverId,
   });
-  const { data: user } = useGetDetailsQuery();
+  // const { data: user } = useGetDetailsQuery();
   const [sendMessage] = useSendMessageMutation();
 
   const [text, setText] = useState("");
@@ -24,6 +26,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null); // ✅ Fix
   const messagesEndRef = useRef<HTMLDivElement | null>(null); // For auto-scrolling
+  const senderUserId  = useSelector((state : RootState) => state.auth?.user?._id)
 
   // ✅ Sync state when API fetches messages
   useEffect(() => {
@@ -32,17 +35,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
 
   // ✅ Register user on socket connection
   useEffect(() => {
-    if (user?.userData?._id) {
-      socket.emit("register", user.userData._id);
+    if (senderUserId) {
+      socket.emit("register", senderUserId);
     }
-  }, [user]);
+  }, [senderUserId]);
 
   // ✅ Listen for new messages & typing events
   useEffect(() => {
     if (!receiverId) return;
 
     const handleNewMessage = (message: any) => {
-      const currentUserId = user?.userData?._id;
+      const currentUserId = senderUserId;
     
       // ✅ Only add messages that are between the current user and this chat's receiver
       const isRelevant =
@@ -61,7 +64,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
     
 
     const handleTyping = (data: { senderId: string; receiverId: string }) => {
-      const currentUserId = user?.userData?._id;
+      const currentUserId = senderUserId;
     
       // ✅ Only show typing if it's from the person you're currently chatting with
       if (data?.senderId !== receiverId || data?.receiverId !== currentUserId) return;
@@ -97,7 +100,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
     if (!receiverId) return;
 
     socket.emit("typing", {
-      senderId: user?.userData?._id,
+      senderId: senderUserId,
       receiverId,
     });
     
@@ -114,7 +117,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
   const handleSend = async () => {
     if (!text.trim() || !receiverId) return;
 
-    const userId = user?.userData?._id;
+    const userId = senderUserId;
     if (!userId) {
       console.error("❌ senderId is missing! Cannot send message.");
       return;
@@ -155,7 +158,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
                 className={`p-2 my-2 ${
-                  msg.senderId?._id === user?.userData?._id
+                  msg.senderId?._id === senderUserId
                     ? "text-right"
                     : "text-left"
                 }`}
