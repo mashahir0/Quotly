@@ -4,7 +4,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["LoadUser"],
+
   endpoints: (builder) => ({
     register: builder.mutation<
       any,
@@ -16,6 +16,24 @@ export const userApi = createApi({
         body: user,
       }),
     }),
+    sendOtp: builder.mutation<{ message: string }, { email: string }>({
+      query: (body) => ({
+        url: "/send-otp",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    verifyOtp: builder.mutation<
+      any,
+      {  email: string;  otp: string }
+    >({
+      query: (user) => ({
+        url: "/verify-otp",
+        method: "POST",
+        body: user,
+      }),
+    }),
 
     login: builder.mutation<any, { email: string; password: string }>({
       query: (credentials) => ({
@@ -23,7 +41,6 @@ export const userApi = createApi({
         method: "POST",
         body: credentials,
       }),
-      invalidatesTags : ["LoadUser"]
     }),
     googleLogin: builder.mutation<any, { token: string }>({
       query: (googleData) => ({
@@ -31,11 +48,9 @@ export const userApi = createApi({
         method: "POST",
         body: googleData,
       }),
-      invalidatesTags : ["LoadUser"]
     }),
     getDetails: builder.query<any, void>({
       query: () => "/get-details",
-      providesTags :["LoadUser"]
     }),
     updateProfile: builder.mutation<{ message: string }, FormData>({
       query: (formData) => ({
@@ -52,5 +67,7 @@ export const {
   useLoginMutation,
   useGoogleLoginMutation,
   useGetDetailsQuery,
-  useUpdateProfileMutation  
+  useUpdateProfileMutation  ,
+  useSendOtpMutation,
+  useVerifyOtpMutation
 } = userApi;

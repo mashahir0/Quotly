@@ -7,6 +7,7 @@ import postRepository from "../infrastructure/repositories/postRepository";
 
 const userService = {
   async register(userData: { name: string; email: string; password: string }) {
+    console.log('wwwwwwwwwewewewwe')
     const existingUser = await UserRepository.findByEmail(userData.email);
     if (existingUser) throw new Error("User already exists");
     const nameExist = await UserRepository.findByName(userData.name)

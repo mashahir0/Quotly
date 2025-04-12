@@ -15,14 +15,40 @@ const Navbar: React.FC = () => {
 
   // Get user from Redux store
   const user = useSelector((state: RootState) => state?.auth?.user);
-
+  const deleteAllCookies = () => {
+    const cookies = document.cookie.split(";");
+  
+    cookies.forEach(cookie => {
+      const cookieName = cookie.split("=")[0];
+      document.cookie = `${cookieName}=;expires=${new Date(0).toUTCString()};path=/`;
+    });
+  };
+  
   const handleLogout = () => {
+    // Clear localStorage and sessionStorage
     localStorage.removeItem("userToken");
+    sessionStorage.clear();
+  
+    // Clear any stored cookies
+    deleteAllCookies();
+  
+    // Reset application state
     dispatch(clearQuote());
     dispatch(clearUser());
-    dispatch(userApi.util.resetApiState())
+    // dispatch(userApi.util.resetApiState());
+  
+    // Redirect to login page
     navigate("/login");
   };
+  
+
+  // const handleLogout = () => {
+  //   localStorage.removeItem("userToken");
+  //   dispatch(clearQuote());
+  //   dispatch(clearUser());
+  //   dispatch(userApi.util.resetApiState())
+  //   navigate("/login");
+  // };
 
   return (
     <>
