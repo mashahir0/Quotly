@@ -23,6 +23,7 @@ const corsOptions = {
 
 app.use(cookieParser());
 app.use(express.json());
+app.set("trust proxy", 1)
 app.use(cors(corsOptions));
 
 const server = http.createServer(app); // Create HTTP Server for WebSockets

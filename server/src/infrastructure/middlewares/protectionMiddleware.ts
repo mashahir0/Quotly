@@ -11,4 +11,15 @@ export const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-export const isAdmin = (req: Request, res: Response, next: NextFunction) => {};
+
+
+export const otpRateLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 3, // limit each IP to 3 OTP requests per window
+  message: {
+    status: 429,
+    error: "Too many OTP requests. Please try again later.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+})

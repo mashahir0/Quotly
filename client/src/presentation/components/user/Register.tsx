@@ -116,13 +116,19 @@
 
 
 
-
-import { SetStateAction, useState } from "react"
-
+import { SetStateAction, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { LockOpenIcon as LockClosedIcon, UserIcon, InboxIcon as EnvelopeIcon } from "lucide-react"
+import {
+  LockOpenIcon as LockClosedIcon,
+  UserIcon,
+  InboxIcon as EnvelopeIcon,
+} from "lucide-react"
 import toast from "react-hot-toast"
-import {  useRegisterMutation, useSendOtpMutation, useVerifyOtpMutation } from "../../../data/api/userApi"
+import {
+  useRegisterMutation,
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+} from "../../../data/api/userApi"
 
 const RegisterForm = () => {
   const [step, setStep] = useState<"form" | "otp">("form")
@@ -130,11 +136,20 @@ const RegisterForm = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [otp, setOtp] = useState("")
+  const [cooldown, setCooldown] = useState(0)
 
   const [sendOtp, { isLoading: sendingOtp }] = useSendOtpMutation()
-  const [verifyOtp, { isLoading: verifyingOtp }] =useVerifyOtpMutation()
-  const [registerUser , {isLoading : registering}] = useRegisterMutation()
+  const [verifyOtp, { isLoading: verifyingOtp }] = useVerifyOtpMutation()
+  const [registerUser, { isLoading: registering }] = useRegisterMutation()
   const navigate = useNavigate()
+
+  // Countdown effect
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [cooldown])
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -142,18 +157,29 @@ const RegisterForm = () => {
       await sendOtp({ email }).unwrap()
       toast.success("OTP sent to email")
       setStep("otp")
+      setCooldown(30)
     } catch (err: any) {
       toast.error(err?.data?.error || "Failed to send OTP")
+    }
+  }
+
+  const handleResendOtp = async () => {
+    try {
+      await sendOtp({ email }).unwrap()
+      toast.success("OTP resent to email")
+      setCooldown(30)
+    } catch (err: any) {
+      toast.error(err?.data?.error || "Failed to resend OTP")
     }
   }
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await verifyOtp({  email,  otp }).unwrap()
+      await verifyOtp({ email, otp }).unwrap()
       toast.success("OTP verified. Creating account...")
-      
-      await registerUser({name , email , password})
+
+      await registerUser({ name, email, password }).unwrap()
       toast.success("Registration successful")
       navigate("/login")
     } catch (err: any) {
@@ -165,10 +191,15 @@ const RegisterForm = () => {
     <div className="min-h-screen flex items-center justify-center bg-[#1a0c75] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-[#2e1e9c] rounded-2xl shadow-xl p-8 space-y-8">
         <div>
-          <h2 className="text-center text-3xl font-extrabold text-[#ece6ff]">Create your account</h2>
+          <h2 className="text-center text-3xl font-extrabold text-[#ece6ff]">
+            Create your account
+          </h2>
         </div>
 
-        <form className="space-y-6" onSubmit={step === "form" ? handleSendOtp : handleVerifyOtp}>
+        <form
+          className="space-y-6"
+          onSubmit={step === "form" ? handleSendOtp : handleVerifyOtp}
+        >
           {step === "form" ? (
             <>
               <div className="space-y-4">
@@ -177,21 +208,27 @@ const RegisterForm = () => {
                   type="text"
                   placeholder="Name"
                   value={name}
-                  onChange={(e: { target: { value: SetStateAction<string> } }) => setName(e.target.value)}
+                  onChange={(e: { target: { value: SetStateAction<string> } }) =>
+                    setName(e.target.value)
+                  }
                 />
                 <InputField
                   icon={<EnvelopeIcon className="h-5 w-5 text-purple-300" />}
                   type="email"
                   placeholder="Email address"
                   value={email}
-                  onChange={(e: { target: { value: SetStateAction<string> } }) => setEmail(e.target.value)}
+                  onChange={(e: { target: { value: SetStateAction<string> } }) =>
+                    setEmail(e.target.value)
+                  }
                 />
                 <InputField
                   icon={<LockClosedIcon className="h-5 w-5 text-purple-300" />}
                   type="password"
                   placeholder="Password"
                   value={password}
-                  onChange={(e: { target: { value: SetStateAction<string> } }) => setPassword(e.target.value)}
+                  onChange={(e: { target: { value: SetStateAction<string> } }) =>
+                    setPassword(e.target.value)
+                  }
                 />
               </div>
               <Button loading={sendingOtp} label="Send OTP" />
@@ -203,9 +240,26 @@ const RegisterForm = () => {
                 type="text"
                 placeholder="Enter OTP"
                 value={otp}
-                onChange={(e: { target: { value: SetStateAction<string> } }) => setOtp(e.target.value)}
+                onChange={(e: { target: { value: SetStateAction<string> } }) =>
+                  setOtp(e.target.value)
+                }
               />
-              <Button loading={verifyingOtp || registering} label="Verify OTP & Register" />
+              <Button
+                loading={verifyingOtp || registering}
+                label="Verify OTP & Register"
+              />
+
+              {/* Resend OTP Button */}
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={sendingOtp || cooldown > 0}
+                className="mt-4 w-full text-sm text-purple-200 hover:underline disabled:opacity-50"
+              >
+                {cooldown > 0
+                  ? `Resend OTP in ${cooldown}s`
+                  : "Resend OTP"}
+              </button>
             </>
           )}
         </form>
@@ -223,7 +277,9 @@ const RegisterForm = () => {
 // 👇 Small reusable components
 const InputField = ({ icon, ...props }: any) => (
   <div className="relative">
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">{icon}</div>
+    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      {icon}
+    </div>
     <input
       {...props}
       required
@@ -232,7 +288,13 @@ const InputField = ({ icon, ...props }: any) => (
   </div>
 )
 
-const Button = ({ loading, label }: { loading: boolean; label: string }) => (
+const Button = ({
+  loading,
+  label,
+}: {
+  loading: boolean
+  label: string
+}) => (
   <button
     type="submit"
     disabled={loading}

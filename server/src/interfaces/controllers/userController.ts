@@ -22,6 +22,7 @@ const authController = {
 
   async login(req: Request, res: Response) {
     try {
+      
       const { user, accessToken, refreshToken } = await userService.login(
         req.body.email,
         req.body.password
@@ -39,6 +40,7 @@ const authController = {
   },
   async googleAuth(req: Request, res: Response) {
     try {
+      console.log(req.ip)
       const { token } = req.body; // Expect access token from frontend
 
       if (!token) {

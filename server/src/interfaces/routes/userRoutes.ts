@@ -1,6 +1,6 @@
 import express from "express";
 import userController from "../controllers/userController";
-import { loginLimiter } from "../../infrastructure/middlewares/protectionMiddleware";
+import { loginLimiter, otpRateLimiter } from "../../infrastructure/middlewares/protectionMiddleware";
 import { authorizeRoles, verifyToken } from "../../infrastructure/middlewares/authMiddleware";
 import upload from "../../infrastructure/middlewares/upload";
 import { sendOtp, verifyOtp } from "../controllers/otpController";
@@ -9,7 +9,7 @@ const router = express.Router();
 router.post("/refresh-token", userController.refreshToken);
 
 router.post("/register", userController.register);
-router.post("/send-otp",sendOtp);
+router.post("/send-otp",otpRateLimiter,sendOtp);
 router.post("/verify-otp", verifyOtp);
 router.post("/login",userController.login);
 
