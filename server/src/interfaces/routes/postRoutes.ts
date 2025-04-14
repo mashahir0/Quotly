@@ -4,6 +4,7 @@ import {
   authorizeRoles,
   verifyToken,
 } from "../../infrastructure/middlewares/authMiddleware";
+import { userPostRateLimiter } from "../../infrastructure/middlewares/protectionMiddleware";
 
 const router = express.Router();
 
@@ -11,6 +12,7 @@ router.post(
   "/add-post",
   verifyToken(),
   authorizeRoles(["user", "admin"]),
+  userPostRateLimiter,
   postController.addPost
 );
 router.get(

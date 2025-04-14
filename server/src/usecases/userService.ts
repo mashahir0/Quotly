@@ -7,10 +7,10 @@ import postRepository from "../infrastructure/repositories/postRepository";
 
 const userService = {
   async register(userData: { name: string; email: string; password: string }) {
-    const existingUser = await UserRepository.findByEmail(userData.email);
-    if (existingUser) throw new Error("User already exists");
     const nameExist = await UserRepository.findByName(userData.name)
     if(nameExist) throw new Error("userName already exist")
+    const existingUser = await UserRepository.findByEmail(userData.email);
+    if (existingUser) throw new Error("User already exists");
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = new User(null, userData.name, userData.email, hashedPassword);
     return await UserRepository.save(user);

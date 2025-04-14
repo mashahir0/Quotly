@@ -15,7 +15,7 @@ interface ChatWindowProps {
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
-  const { data: messages, isLoading } = useGetMessagesQuery(receiverId || "", {
+  const { data: messages, isLoading ,refetch} = useGetMessagesQuery(receiverId || "", {
     skip: !receiverId,
   });
   // const { data: user } = useGetDetailsQuery();
@@ -27,6 +27,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null); // ✅ Fix
   const messagesEndRef = useRef<HTMLDivElement | null>(null); // For auto-scrolling
   const senderUserId  = useSelector((state : RootState) => state.auth?.user?._id)
+
+  useEffect(() => {
+    if (receiverId) {
+      refetch();
+      setChatMessages([]); // optional: clear old messages when switching user
+    }
+  }, [receiverId, refetch]);
 
   // ✅ Sync state when API fetches messages
   useEffect(() => {

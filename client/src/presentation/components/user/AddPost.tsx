@@ -18,9 +18,9 @@ const AddPost: React.FC<{ onPostAdded?: () => void }> = ({ onPostAdded }) => {
       refetch();
       toast.success(`New post shared 🎉`);
       if (onPostAdded) onPostAdded();
-    } catch (err) {
-      toast.error("oops something wrong!!!!");
-      console.error("Failed to add post", err);
+    } catch (err : any) {
+      toast.error(err.data.error);
+      console.error(err.data.error);
     }
   };
   console.log(error);
@@ -44,7 +44,7 @@ const AddPost: React.FC<{ onPostAdded?: () => void }> = ({ onPostAdded }) => {
             {typeof error === "string"
               ? error
               : "data" in error
-              ? (error as any)?.data?.message || "An error occurred"
+              ? (error as any)?.data?.error || "An error occurred"
               : "Something went wrong"}
           </p>
         )}

@@ -175,7 +175,7 @@ const LoginForm = () => {
 
           {/* Sign Up Link */}
           <Link to="/register">
-            <p className="text-center text-sm text-[#b09fff] hover:text-[#d0c2ff] transition duration-200 ease-in-out">
+            <p className="text-center  mt-3 text-sm text-[#b09fff] hover:text-[#d0c2ff] transition duration-200 ease-in-out">
               Don't have an account? Sign Up
             </p>
           </Link>
