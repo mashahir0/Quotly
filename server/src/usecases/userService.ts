@@ -88,6 +88,15 @@ const userService = {
     }
   },
   async updateProfile(userId: string, name?: string, profilePic?: string) {
+    
+    if (name) {
+      const nameExist = await UserRepository.findByName(name);
+      
+      // If the found name belongs to a different user
+      if (nameExist && nameExist._id.toString() !== userId) {
+        throw new Error("Username already exists");
+      }
+    }
     const user = await UserRepository.findById(userId);
     if (!user) {
       throw new Error("User not found");

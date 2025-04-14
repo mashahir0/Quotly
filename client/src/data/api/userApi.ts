@@ -52,7 +52,10 @@ export const userApi = createApi({
     getDetails: builder.query<any, void>({
       query: () => "/get-details",
     }),
-    updateProfile: builder.mutation<{ message: string }, FormData>({
+    updateProfile: builder.mutation<{
+      user(user: any): unknown;
+      userData: any; message: string 
+}, FormData>({
       query: (formData) => ({
         url: "/update-profile",
         method: "PUT",

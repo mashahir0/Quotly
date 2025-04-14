@@ -5,7 +5,6 @@ import {
   useGetMessagesQuery,
   useSendMessageMutation,
 } from "../../../data/api/chatApi";
-
 import socket from "../../../utils/socket";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../domain/redux/store";

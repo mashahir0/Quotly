@@ -40,7 +40,7 @@ const authController = {
   },
   async googleAuth(req: Request, res: Response) {
     try {
-      console.log(req.ip)
+
       const { token } = req.body; // Expect access token from frontend
 
       if (!token) {

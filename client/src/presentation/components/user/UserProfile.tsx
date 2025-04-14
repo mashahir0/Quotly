@@ -1,8 +1,19 @@
+
+
+
 import { useEffect, useState } from "react";
 import { useGetDetailsQuery, useUpdateProfileMutation } from "../../../data/api/userApi";
 import { FaEdit, FaEye, FaTimes, FaSpinner } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import socket from "../../../utils/socket";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setUser, UserData } from "../../../domain/redux/slilce/userSlice";
+
+
+interface UpdateProfileResponse {
+  message: string;
+  user: UserData;
+}
 
 const UserProfile = () => {
   const { data: user, refetch } = useGetDetailsQuery();
@@ -11,24 +22,13 @@ const UserProfile = () => {
   const [name, setName] = useState(user?.userData?.name || "");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(user?.userData?.photo || null);
-  const [isLoading, setIsLoading] = useState(false); // 🔹 Track loading state
-  console.log(user,'24343432gdgfdgdf')
-
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch(); // Initialize dispatch
 
   useEffect(() => {
-    refetch()
+    refetch();
     console.log("Checking user data:", user);
-  
-    if (user?.userData?._id) {
-      socket.emit("register", user.userData._id); // ✅ Correct user ID
-      console.log(`✅ User ${user.userData._id} registered in socket room`);
-    } else {
-      console.log("❌ User ID is missing, not registering in socket room.");
-    }
   }, [user]);
-  
-  
-  
 
   // Handle file selection and generate preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,10 +49,17 @@ const UserProfile = () => {
     }
 
     try {
-      await updateProfile(formData).unwrap();
+      const response = await updateProfile(formData).unwrap() as unknown as UpdateProfileResponse;
+
+const { password, ...safeUser } = response.user;
+dispatch(setUser({ user: safeUser }));
+
       refetch();
+      console.log(response)
+      // dispatch(setUser({ user: updatedUser?.user })); // Update Redux state with new user data
       setIsModalOpen(false);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error?.data?.error);
       console.error("Update failed:", error);
     } finally {
       setIsLoading(false); // Stop loading animation
