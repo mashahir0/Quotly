@@ -1,9 +1,10 @@
-import bcrypt from "bcryptjs";
+import bcrypt, { hash } from "bcryptjs";
 import UserRepository from "../infrastructure/repositories/userRepository";
 import tokenService from "./tokenService";
 import { User, IUser } from "../domain/User";
 import axios from "axios";
 import postRepository from "../infrastructure/repositories/postRepository";
+import redisClient from "../redis";
 
 const userService = {
   async register(userData: { name: string; email: string; password: string }) {
@@ -16,8 +17,36 @@ const userService = {
     return await UserRepository.save(user);
   },
 
+  async resetPasswordService  (email: string, newPassword: string)  {
+    console.log(email)
+    const user = await UserRepository.findByEmail(email);
+    console.log(user)
+  
+    if (!user) {
+      throw new Error("User not found");
+    }
+  
+    // ✅ Check if this email has been recently verified via OTP
+    const isVerified = await redisClient.get(`verified:${email}`);
+  
+    if (!isVerified) {
+      throw new Error("OTP not verified. Please verify OTP before resetting password.");
+    }
+  
+    const hashedPassword = await hash(newPassword, 10);
+    await UserRepository.updateUserPassword(email, hashedPassword);
+  
+    // ❌ Optional: Invalidate all tokens/sessions here
+  
+    // 🔒 Clean up
+    await redisClient.del(`verified:${email}`);
+  
+    return "Password updated successfully";
+  },
+
   async login(email: string, password: string) {
     const user = await UserRepository.findByEmail(email);
+    console.log(user)
     if (!user) throw new Error("Invalid credentials");
 
     if (user.userStatus === "Blocked") throw new Error("User Blocked by admin");

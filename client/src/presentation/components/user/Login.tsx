@@ -179,6 +179,15 @@ const LoginForm = () => {
               Don't have an account? Sign Up
             </p>
           </Link>
+          <p className="text-center  text-sm text-[#b09fff]">
+  Forgot your password?{" "}
+  <Link
+    to="/reset-password"
+    className="hover:text-[#d0c2ff] underline transition duration-200 ease-in-out"
+  >
+    Click here to reset it
+  </Link>
+</p>
         </form>
         {error && "data" in error && typeof error.data === "object" && (
           <div className="mt-2 text-center text-sm text-red-600">

@@ -17,7 +17,17 @@ const authController = {
     }
   },
   
+  async resetPasswordController  (req: Request, res: Response) {
+    const { email, newPassword } = req.body;
   
+    try {
+      const message = await userService.resetPasswordService(email, newPassword);
+      res.status(200).json({ message });
+    } catch (err: any) {
+      console.log('from restcontroller',err)
+      res.status(400).json({ error: err.message || "Password reset failed" });
+    }
+  },
   
 
   async login(req: Request, res: Response) {

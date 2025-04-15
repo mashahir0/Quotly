@@ -8,6 +8,7 @@ import MyPostPage from "../../presentation/pages/user/MyPostPage";
 import TopProfilesPage from "../../presentation/pages/user/TopProfilesPage";
 import ChatPage from "../../presentation/pages/user/ChatPage";
 import SharedPageView from "../../presentation/pages/user/SharedPageView";
+import ForgotPassword from "../../presentation/components/user/ForgotPass";
 
 
 const userRoutes = [
@@ -44,6 +45,10 @@ const userRoutes = [
   {
     path:'/sharedQuote/:shareId',
     element:(<SharedPageView/>)
+  },
+  {
+    path:'/reset-password',
+    element:(<ForgotPassword/>)
   },
 ];
 

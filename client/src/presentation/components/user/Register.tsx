@@ -344,6 +344,7 @@ const RegisterForm = () => {
             Already have an account? Login
           </p>
         </Link>
+        
       </div>
     </div>
   )

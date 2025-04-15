@@ -71,7 +71,10 @@ async searchUsers(search: string, page: number, limit: number) {
     users,
     lastId: users.length > 0 ? users[users.length - 1]._id : null,
   };
-}
+},
+async updateUserPassword (email: string, hashedPassword: string)  {
+  return await userModel.updateOne({ email }, { $set: { password: hashedPassword } });
+},
 
 
 

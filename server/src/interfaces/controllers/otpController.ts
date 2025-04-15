@@ -40,6 +40,10 @@ export const sendOtp = async (req: Request, res: Response) => {
   
       if (storedOtp !== otp)
         return res.status(401).json({ error: "Incorrect OTP" });
+      // After verifying OTP
+      
+      await redisClient.setEx(`verified:${email}`, 600, "true"); // valid for 10 mins
+
   
       await redisClient.del(`otp:${email}`); // Remove after verification
   
