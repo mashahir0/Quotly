@@ -9,46 +9,56 @@ import TopProfilesPage from "../../presentation/pages/user/TopProfilesPage";
 import ChatPage from "../../presentation/pages/user/ChatPage";
 import SharedPageView from "../../presentation/pages/user/SharedPageView";
 import ForgotPassword from "../../presentation/components/user/ForgotPass";
+import ErrorFallback from "../../presentation/components/common/ErrorFallback";
 
 
 const userRoutes = [
   {
     path: "/",
     element: <Navigate to="/login" />,
+    errorElement: <ErrorFallback />,
   },
   {
     path: "/login",
     element:(
       <UserAuthenticated><LoginForm /></UserAuthenticated>
       ),
+      errorElement: <ErrorFallback />,
   },
   {
     path: "/register",
     element: (<UserAuthenticated><RegisterForm /></UserAuthenticated>),
+    errorElement: <ErrorFallback />,
   },
   {
     path:'/home',
-    element:(<UserPrivate><HomePage/></UserPrivate>)
+    element:(<UserPrivate><HomePage/></UserPrivate>),
+    errorElement: <ErrorFallback />,
   },
   {
     path:'/my-posts',
-    element:(<UserPrivate><MyPostPage/></UserPrivate>)
+    element:(<UserPrivate><MyPostPage/></UserPrivate>),
+    errorElement: <ErrorFallback />,
   },
   {
     path:'/top-profiles',
-    element:(<UserPrivate><TopProfilesPage/></UserPrivate>)
+    element:(<UserPrivate><TopProfilesPage/></UserPrivate>),
+    errorElement: <ErrorFallback />,
   },
   {
     path:'/message',
-    element:(<UserPrivate><ChatPage/></UserPrivate>)
+    element:(<UserPrivate><ChatPage/></UserPrivate>),
+    errorElement: <ErrorFallback />,
   },
   {
     path:'/sharedQuote/:shareId',
-    element:(<SharedPageView/>)
+    element:(<SharedPageView/>),
+    errorElement: <ErrorFallback />,
   },
   {
     path:'/reset-password',
-    element:(<ForgotPassword/>)
+    element:(<ForgotPassword/>),
+    errorElement: <ErrorFallback />,
   },
 ];
 
