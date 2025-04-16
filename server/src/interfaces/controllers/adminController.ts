@@ -38,8 +38,14 @@ const adminController = {
   },
   async getUsers(req: Request, res: Response) {
     try {
-      const users = await UserRepository.getAllUsers();
-      res.status(200).json(users);
+      const { page = "1", search = "" } = req.query;
+
+      const result = await adminServices.getUsers({
+        page: parseInt(page as string),
+        search: search as string,
+      });
+
+      res.status(200).json(result);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

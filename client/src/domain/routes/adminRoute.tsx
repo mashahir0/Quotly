@@ -15,7 +15,7 @@ const adminRoutes = [
         errorElement: <ErrorFallback />,
     },
     {
-        path: '/admin/dashboard',
+        path: '/admin/users',
         element:(<AdminPrivate> <Dashboard/></AdminPrivate> ),
         errorElement: <ErrorFallback />,
     }

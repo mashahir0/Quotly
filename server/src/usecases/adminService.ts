@@ -21,6 +21,17 @@ const adminServices = {
     const refreshToken = tokenService.generateToken(userData, "7d");
     return { admin: userData, accessToken, refreshToken };
   },
+  async getUsers({
+    page = 1,
+    search = "",
+    limit = 10,
+  }: {
+    page: number;
+    search: string;
+    limit?: number;
+  }) {
+    return await UserRepository.getAllUsers({ page, search, limit });
+  },
   async blockUser(id : string){
     const  user = await UserRepository.findById(id)
     if(!user) throw new Error('user not existing')

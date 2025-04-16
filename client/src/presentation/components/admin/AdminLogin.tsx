@@ -49,7 +49,7 @@ const AdminLogin = () => {
         localStorage.setItem('adminToken',result.accessToken)
         dispatch(setAdmin({admin :result.admin } ))
         console.log(result)
-        navigate('/admin/dashboard')
+        navigate('/admin/users')
     } catch (error) {
         console.log(error)
     }

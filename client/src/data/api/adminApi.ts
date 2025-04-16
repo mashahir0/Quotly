@@ -15,10 +15,11 @@ export const adminApi = createApi({
           body: admin,
         }),
       }),
-      getUsers: builder.query<any, void>({
-        query: () => "/users",
-        providesTags:['Users']
+      getUsers: builder.query<any, { page?: number; search?: string }>({
+        query: ({ page = 1, search = "" }) => `/users?page=${page}&search=${search}`,
+        providesTags: ["Users"],
       }),
+      
       blockUser:builder.mutation<any , string>({
         query :(id) => ({
             url : '/block-user',

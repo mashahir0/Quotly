@@ -22,5 +22,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "src/domain/redux/protect/UserAuthenticated.tsx"]
+  "include": ["src", "src/domain/redux/protect/user/UserAuthenticated.tsx"]
 }

@@ -1,46 +1,111 @@
-import { LayoutDashboard, Users, LogOut } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../domain/redux/store";
-import { Link, useNavigate } from "react-router-dom";
-import { clearAdmin } from "../../../domain/redux/slilce/userSlice"; 
-// import { clearAdmin } from "../../../domain/redux/slilce/adminSlice";
+import React, { useState } from "react";
+import { LogOut, Mail, User, Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearAdmin } from "../../../domain/redux/slilce/userSlice";
+import Modal from "../common/CofirmModal";
 
-const AdminNavbar = () => {
-    const admin = useSelector((state : RootState) => state?.auth?.admin)
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+const Navbar: React.FC = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-    const handleLogout = () =>{
-      localStorage.removeItem('adminToken')
-      dispatch(clearAdmin())
-      navigate('/admin/login')
-    }
+  const navigate = useNavigate();
+  const dispatch = useDispatch()
+
+  const handleLogout = () =>{
+    localStorage.removeItem('adminToken')
+    dispatch(clearAdmin())
+    navigate('/admin/login')
+  }
+  const openLogoutModal = () => {
+    setShowLogoutModal(true);
+  };
+
+  const closeLogoutModal = () => {
+    setShowLogoutModal(false);
+  };
 
   return (
-    <aside className="w-64 h-screen bg-gray-900 text-white flex flex-col p-5">
-      <h1 className="text-xl font-bold text-center mb-6">{admin?.name || 'something wrong'}</h1>
+    <nav className="fixed top-0 w-full z-50 bg-gray-900 text-white shadow-md px-4 py-3 flex items-center justify-between">
+      {/* Left: Title */}
+      <h1 className="text-lg sm:text-xl font-bold text-purple-400">Quotly Admin Panel</h1>
 
-      <nav className="space-y-4">
-        <Link to="/admin/dashboard" className="flex items-center space-x-3 p-3 rounded-md hover:bg-gray-700">
-          <LayoutDashboard className="w-5 h-5" />
-          <span>Dashboard</span>
-        </Link>
-        <Link to="/admin/users" className="flex items-center space-x-3 p-3 rounded-md hover:bg-gray-700">
-          <Users className="w-5 h-5" />
-          <span>Users</span>
-        </Link>
-      </nav>
-
-      <div className="mt-auto">
-        <button className="w-full flex items-center justify-center space-x-3 p-3 rounded-md bg-red-600 hover:bg-red-700" 
-        onClick={handleLogout}
+      {/* Center: Navigation Links (hidden on mobile) */}
+      <div className="hidden md:flex items-center gap-10 absolute left-1/2 transform -translate-x-1/2">
+        <div
+          className="flex items-center gap-2 cursor-pointer hover:text-purple-400 transition"
+          onClick={() => navigate("/admin/users")}
         >
-          <LogOut className="w-5 h-5" />
-          <span>Logout</span>
+          <User size={18} />
+          <span>User</span>
+        </div>
+        <div
+          className="flex items-center gap-2 cursor-pointer hover:text-purple-400 transition"
+          onClick={() => navigate("/admin/inbox")}
+        >
+          <Mail size={18} />
+          <span>Inbox</span>
+        </div>
+      </div>
+
+      {/* Right: Logout */}
+      <div className="hidden md:flex items-center gap-2 cursor-pointer hover:text-red-400 transition" onClick={openLogoutModal}>
+        <LogOut size={18} />
+        <span>Logout</span>
+      </div>
+
+      {/* Mobile Menu Button */}
+      <div className="md:hidden flex items-center">
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
-    </aside>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="absolute top-full left-0 w-full bg-gray-800 py-4 flex flex-col gap-4 items-center md:hidden">
+          <div
+            className="flex items-center gap-2 cursor-pointer hover:text-purple-400 transition"
+            onClick={() => {
+              navigate("/admin/users");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <User size={18} />
+            <span>User</span>
+          </div>
+          <div
+            className="flex items-center gap-2 cursor-pointer hover:text-purple-400 transition"
+            onClick={() => {
+              navigate("/admin/inbox");
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <Mail size={18} />
+            <span>Inbox</span>
+          </div>
+          <div
+            className="flex items-center gap-2 cursor-pointer hover:text-red-400 transition"
+            onClick={() => {
+              openLogoutModal()
+              setIsMobileMenuOpen(false);
+            }}
+          >
+            <LogOut size={18} />
+            <span>Logout</span>
+          </div>
+        </div>
+      )}
+
+        <Modal
+        isOpen={showLogoutModal}
+        onClose={closeLogoutModal}
+        onConfirm={handleLogout}
+        title="Logout"
+        message="Are you sure you want to logout?"
+      />
+    </nav>
   );
 };
 
-export default AdminNavbar;
+export default Navbar;

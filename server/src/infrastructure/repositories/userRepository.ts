@@ -16,8 +16,40 @@ const UserRepository = {
   async findById(id: string) {
     return await UserModel.findById(id).select('-password').exec();
   },
-  async getAllUsers() {
-    return await UserModel.find().select('-password').exec();
+  async getAllUsers({
+    page,
+    search,
+    limit = 10,
+  }: {
+    page: number;
+    search: string;
+    limit: number;
+  }) {
+    const query = {
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ],
+    };
+
+    const skip = (page - 1) * limit;
+    const [users, total] = await Promise.all([
+      UserModel.find(query)
+        .select("-password")
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .exec(),
+      UserModel.countDocuments(query),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      users,
+      totalPages,
+      currentPage: page,
+    };
   },
   async findAndDelete(id: string) {
     // Step 1: Delete all posts by this user
