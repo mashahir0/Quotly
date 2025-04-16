@@ -3,6 +3,7 @@ import tokenService from "./tokenService";
 import UserRepository from "../infrastructure/repositories/userRepository";
 import bcrypt from "bcryptjs";
 import userModel from "../domain/models/userModel";
+import postRepository from "../infrastructure/repositories/postRepository";
 
 const adminServices = {
   async login(email: string, password: string) {
@@ -42,7 +43,24 @@ const adminServices = {
     if(!id) throw new Error('id not provided')
     await UserRepository.findAndDelete(id)
     return {userDeleted : true}
-  }
+  },
+  async getUserPosts  (userId: string, page: number = 1)  {
+    const limit = 5;
+    const skip = (page - 1) * limit;
+  
+    const { posts, total } = await postRepository.findUserPosts(userId, skip, limit);
+    const totalPages = Math.ceil(total / limit);
+  
+    return { posts, totalPages, currentPage: page };
+  },
+  
+  // async deletePost  (postId: string, userId: string)  {
+  //   const deletedPost = await postRepository.deletePost(postId, userId);
+  //   if (!deletedPost) {
+  //     throw new Error("Post not found or unauthorized");
+  //   }
+  //   return deletedPost;
+  // },
 };
 
 export default adminServices;

@@ -6,7 +6,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 export const adminApi = createApi({
     reducerPath:'adminApi',
     baseQuery:baseQueryWithAdminReauth,
-    tagTypes:['Users'],
+    tagTypes:['Users','UserPosts'],
     endpoints:(builder) => ({
         adminLogin: builder.mutation<any, { email: string, password: string }>({
         query: (admin) => ({
@@ -35,7 +35,19 @@ export const adminApi = createApi({
             body :{id}
         }),
         invalidatesTags :['Users']
-     })
+     }),
+     getUserPosts: builder.query<any, { userId: string; page: number }>({
+      query: ({ userId, page }) => `/user-posts/${userId}?page=${page}`,
+      providesTags: ['UserPosts'],
+    }),
+    
+    deletePost: builder.mutation<any, { postId: string; userId: string }>({
+      query: ({ postId, userId }) => ({
+        url: `/users/${userId}/posts/${postId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ['UserPosts'],
+    }),
   
     })
   })
@@ -44,6 +56,8 @@ export const adminApi = createApi({
     useAdminLoginMutation,
     useGetUsersQuery,
     useBlockUserMutation,
-    useDeleteUserMutation
+    useDeleteUserMutation,
+    useGetUserPostsQuery,
+    useDeletePostMutation
     
   } = adminApi

@@ -4,10 +4,12 @@ import { User } from "../../../domain/interface/User";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Modal from "../common/CofirmModal";
+import UserPostsModal from "./UserPostsModal";
 
 const UserTable = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [actionType, setActionType] = useState<"block" | "delete" | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -46,8 +48,7 @@ const UserTable = () => {
   };
 
   const handleViewPosts = (id: string) => {
-    console.log("View posts for user:", id);
-    // Handle navigation or modal for viewing posts
+    setSelectedUserId(id);
   };
 
   if (isLoading) return <p>Loading...</p>;
@@ -150,6 +151,12 @@ const UserTable = () => {
             : "Are you sure you want to toggle this user's block status?"
         }
       />
+      {selectedUserId && (
+  <UserPostsModal
+    userId={selectedUserId}
+    onClose={() => setSelectedUserId(null)}
+  />
+)}
     </div>
   );
 };

@@ -36,8 +36,10 @@ const postServices = {
   },
 
   // ✅ Delete a post
-  async deletePost(userId: string, postId: string) {
+  async deletePost(postId: string, userId: string) {
+
     const deletedPost = await postRepository.deletePost(postId, userId);
+
     if (!deletedPost) throw new Error("Post not found or unauthorized");
     return { message: "Post deleted successfully" };
   },
