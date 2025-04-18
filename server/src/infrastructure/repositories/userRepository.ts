@@ -88,7 +88,7 @@ const UserRepository = {
 // }
 async searchUsers(search: string, page: number, limit: number) {
   const query = {
-    name: { $regex: `^${search}`, $options: "i" },
+    name: { $regex: search, $options: "i" },
   };
 
   const users = await userModel

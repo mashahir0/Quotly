@@ -1,5 +1,5 @@
 import { Trash, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import {
   useGetUserPostsQuery,
   useDeletePostMutation,
