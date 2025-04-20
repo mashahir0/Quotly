@@ -8,18 +8,35 @@ const chatRepository = {
     },
   
     // ✅ Get chat history between two users
-    async getMessages(senderId: string, receiverId: string) {
-      return await chatModel
-        .find({ 
+    // async getMessages(senderId: string, receiverId: string) {
+    //   return await chatModel
+    //     .find({ 
+    //       $or: [
+    //         { senderId, receiverId }, 
+    //         { senderId: receiverId, receiverId: senderId }
+    //       ]
+    //     })
+    //     .sort({ createdAt: 1 }) // ✅ Sort messages in ascending order
+        
+    //     .populate("senderId", "name photo")
+    //     .populate("receiverId", "name photo");
+    // },
+    async getMessages(senderId: string, receiverId: string, limit = 70) {
+      const messages = await chatModel
+        .find({
           $or: [
-            { senderId, receiverId }, 
+            { senderId, receiverId },
             { senderId: receiverId, receiverId: senderId }
           ]
         })
-        .sort({ createdAt: 1 }) // ✅ Sort messages in ascending order
+        .sort({ createdAt: -1 }) // ❗️ Get newest messages first
+        .limit(limit)
         .populate("senderId", "name photo")
         .populate("receiverId", "name photo");
+    
+      return messages.reverse(); // ✅ Return in chronological order
     },
+    
   
     // ✅ Mark messages as seen
     async markMessagesAsSeen(senderId: string, receiverId: string) {
@@ -88,6 +105,7 @@ const chatRepository = {
     
       return { users: recentChats };
     }
+    
     
     
   };

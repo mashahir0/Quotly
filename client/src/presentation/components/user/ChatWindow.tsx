@@ -11,6 +11,7 @@ import { RootState } from "../../../domain/redux/store";
 
 interface ChatWindowProps {
   receiverId: string | null;
+
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
@@ -149,6 +150,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
 
   return (
     <div className="w-2/3 bg-gray-900 p-4 rounded-lg h-full flex flex-col overflow-hidden">
+     
       <div className="flex-1 overflow-y-auto scroll-smooth custom-scrollbar">
         {isLoading ? (
           <div className="flex justify-center items-center h-full">

@@ -64,6 +64,7 @@ import Footer from "../../components/user/Footer";
 
 const ChatPage: React.FC = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  
 
   return (
     <>
@@ -73,7 +74,8 @@ const ChatPage: React.FC = () => {
       </div>
 
       {/* Main content shifted down to avoid being hidden under the fixed navbar */}
-      <div className="flex w-full h-screen pt-16 bg-gray-900">
+      <div className="flex w-full h-[calc(100vh-56px)] pt-16 pb-1 bg-gray-900">
+
         <UserList onSelectUser={setSelectedUserId} selectedUserId={selectedUserId} />
         <ChatWindow receiverId={selectedUserId} />
       </div>

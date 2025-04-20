@@ -6,7 +6,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { postApi } from "../../data/api/postApi";
 import { chatApi } from "../../data/api/chatApi";
-import savedQuotesReducer from '../redux/slilce/savedQuotesSlice'
+
 
 
 const authPersistConfig = {
@@ -15,13 +15,6 @@ const authPersistConfig = {
   whitelist: ["user", "admin"], // ✅ Persist both user & admin
 };
 
-const savedQuotesPersistConfig = {
-  key: "savedQuotes",
-  storage,
-  whitelist: ["savedQuotes"],
-};
-
-const persistedSavedQuotesReducer = persistReducer(savedQuotesPersistConfig, savedQuotesReducer);
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 
 export const store = configureStore({
@@ -30,7 +23,6 @@ export const store = configureStore({
     [adminApi.reducerPath]: adminApi.reducer,
     [postApi.reducerPath]: postApi.reducer,
     [chatApi.reducerPath]: chatApi.reducer,
-    savedQuotes: persistedSavedQuotesReducer,
     auth: persistedAuthReducer, // ✅ Correctly persist auth reducer
   },
   middleware: (getDefaultMiddleware) =>

@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../domain/redux/store"; // Adjust path as needed
 import { clearUser } from "../../../domain/redux/slilce/userSlice";
 import { useNavigate } from "react-router-dom";
-import { clearQuote } from "../../../domain/redux/slilce/savedQuotesSlice";
-import { userApi } from "../../../data/api/userApi";
+
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,7 +32,6 @@ const Navbar: React.FC = () => {
     deleteAllCookies();
   
     // Reset application state
-    dispatch(clearQuote());
     dispatch(clearUser());
     // dispatch(userApi.util.resetApiState());
   
@@ -52,6 +50,63 @@ const Navbar: React.FC = () => {
 
   return (
     <>
+
+    {/* Mobile Bottom Navigation */}
+<div className="md:hidden">
+  {user ? (
+    <div className="fixed bottom-0 left-0 right-0 bg-[#1a0c75] shadow-inner border-t border-[#3d3196] flex justify-around py-2 z-50">
+      <button
+        onClick={() => navigate("/")}
+        className="flex flex-col items-center text-[#c4b8ff] hover:text-white"
+      >
+        <Home className="w-5 h-5" />
+        <span className="text-xs">Home</span>
+      </button>
+
+      <button
+        onClick={() => navigate("/message")}
+        className="flex flex-col items-center text-[#c4b8ff] hover:text-white"
+      >
+        <MessageCircle className="w-5 h-5" />
+        <span className="text-xs">Chat</span>
+      </button>
+
+      <button
+        onClick={() => navigate("/my-posts")}
+        className="flex flex-col items-center text-[#c4b8ff] hover:text-white"
+      >
+        <User className="w-5 h-5" />
+        <span className="text-xs">Posts</span>
+      </button>
+
+      <button
+        onClick={() => navigate("/top-profiles")}
+        className="flex flex-col items-center text-[#c4b8ff] hover:text-white"
+      >
+        <User className="w-5 h-5" />
+        <span className="text-xs">Rank</span>
+      </button>
+
+      <button
+        onClick={() => setIsLogoutModalOpen(true)}
+        className="flex flex-col items-center text-red-400 hover:text-red-500"
+      >
+        <LogOut className="w-5 h-5" />
+        <span className="text-xs">Logout</span>
+      </button>
+    </div>
+  ) : (
+    <div className="fixed bottom-0 left-0 right-0 bg-[#1a0c75] shadow-inner border-t border-[#3d3196] flex justify-around py-2 z-50">
+      <button
+        onClick={() => navigate("/login")}
+        className="flex flex-col items-center text-green-400 hover:text-green-500"
+      >
+        <LogIn className="w-5 h-5" />
+        <span className="text-xs">Login</span>
+      </button>
+    </div>
+  )}
+</div>
       <nav className="bg-[#1a0c75] shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -60,13 +115,13 @@ const Navbar: React.FC = () => {
               <span className="text-2xl font-bold text-[#ece6ff]">Quotly</span>
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button
             <button
               className="text-[#c4b8ff] md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               <Menu className="w-6 h-6" />
-            </button>
+            </button> */}
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-6">
@@ -124,8 +179,8 @@ const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
+
+        {/* {isMobileMenuOpen && (
           <div className="md:hidden bg-[#2e1e9c] px-4 py-3">
             <button
               className="block text-[#ece6ff] hover:text-white py-2"
@@ -155,7 +210,7 @@ const Navbar: React.FC = () => {
               Ranking
             </button>
 
-            {/* Mobile Logout/Login */}
+
             {user ? (
               <button
                 className="block bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md mt-3 w-full"
@@ -171,8 +226,8 @@ const Navbar: React.FC = () => {
                 Login
               </button>
             )}
-          </div>
-        )}
+          </div> */}
+        {/* )} */}
       </nav>
 
       {/* Logout Confirmation Modal */}

@@ -9,10 +9,13 @@ import toast from "react-hot-toast";
 
 const MyPosts = () => {
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError, refetch } = useGetUserPostsQuery({
+  const limit = 12;
+   const { data, isLoading, isError, refetch } = useGetUserPostsQuery({
     page,
-    limit: 12,
+    limit,
   });
+  const totalPages = data?.total ? Math.ceil(data.total / limit) : 1;
+
   const [deletePost] = useDeletePostMutation();
   const [togglePostPrivacy] = useTogglePostPrivacyMutation();
 
@@ -135,18 +138,23 @@ const MyPosts = () => {
       )}
 
       {/* Pagination Controls */}
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-center mt-6 space-x-4">
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded-md mr-4 disabled:opacity-50"
+          className="bg-blue-600 text-white px-4 py-2 rounded-md disabled:opacity-50"
           onClick={() => setPage(page - 1)}
           disabled={page === 1}
         >
           Previous
         </button>
+
+        <span className="text-white text-sm self-center">
+          Page {page} of {totalPages}
+        </span>
+
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded-md disabled:opacity-50"
           onClick={() => setPage(page + 1)}
-          disabled={page === data?.totalPages}
+          disabled={page === totalPages}
         >
           Next
         </button>

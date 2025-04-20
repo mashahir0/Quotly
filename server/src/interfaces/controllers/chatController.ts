@@ -92,7 +92,8 @@ async sendMessage(req: AuthenticatedRequest, res: Response) {
         userId,
         search as string,
         Number(page),
-        Number(limit)
+        Number(limit),
+    
       );
       res.json({ users });
     } catch (error) {

@@ -40,13 +40,14 @@ const UserList: React.FC<UserListProps> = ({
     isError,
     refetch,
   } = useGetUsersChatQuery(
-    { search: debouncedSearch, page: 1, limit: 10, lastId },
+    { search: debouncedSearch, page: 1, limit: 25, lastId },
     {
       skip: false,
       refetchOnFocus: true,
     }
   );
   
+  console.log(data)
 
   const [markSeen] = useMarkMessagesAsSeenMutation();
   const messagesender = useSelector(
@@ -203,9 +204,9 @@ const UserList: React.FC<UserListProps> = ({
           </AnimatePresence>
         </ul>
 
-        {hasMore && !isLoading && (
+        {/* {hasMore && !isLoading && (
           <p className="text-gray-500 text-center mt-2">Loading more...</p>
-        )}
+        )} */}
       </div>
     </div>
   );
