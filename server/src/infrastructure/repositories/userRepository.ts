@@ -91,19 +91,24 @@ async searchUsers(search: string, page: number, limit: number) {
     name: { $regex: search, $options: "i" },
   };
 
-  const users = await userModel
-    .find(query)
-    .sort({ _id: 1 })
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .select("_id name photo")
-    .lean();
+  const [users, total] = await Promise.all([
+    userModel
+      .find(query)
+      .sort({ _id: 1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .select("_id name photo")
+      .lean(),
+
+    userModel.countDocuments(query),
+  ]);
 
   return {
     users,
-    lastId: users.length > 0 ? users[users.length - 1]._id : null,
+    total,
   };
 },
+
 async updateUserPassword (email: string, hashedPassword: string)  {
   return await userModel.updateOne({ email }, { $set: { password: hashedPassword } });
 },

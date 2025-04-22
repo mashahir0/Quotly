@@ -1,6 +1,15 @@
 import { baseQueryWithReauth } from "../connectionApis/User";
 import { createApi } from "@reduxjs/toolkit/query/react";
 
+interface User {
+  _id: string;
+  name: string;
+  photo?: string;
+  seen: boolean;
+  isSender: boolean;
+  // ...other fields
+}
+
 export const chatApi = createApi({
   reducerPath: "chatApi",
   baseQuery: baseQueryWithReauth,
@@ -30,22 +39,23 @@ export const chatApi = createApi({
         url: `/chat/mark-seen/${receiverId}`,
         method: "PUT",
       }),
-      invalidatesTags: ["ChatUsers"],
+      
     }),
     getUsersChat: builder.query<
-      {
-        lastId: null;
-        users: { users: any[]; lastId: string | null };
-      },
-      { search?: string; page?: number; limit?: number; lastId?: string | null }
-    >({
-      query: ({ search = "", page = 1, limit = 10, lastId = null }) => ({
-        url: `/chat/user-list`,
-        params: { search, page, limit, lastId },
-      }),
-      keepUnusedDataFor: 5,
-      providesTags : ["ChatUsers"]
-    }),
+  {
+    total: number;
+    users: User[]; // ideally replace `any` with a proper `User` interface
+  },
+  { search?: string; page?: number; limit?: number }
+>({
+  query: ({ search = "", page = 1, limit = 10 }) => ({
+    url: `/chat/user-list`,
+    params: { search, page, limit },
+  }),
+  keepUnusedDataFor: 5,
+  providesTags: ["ChatUsers"],
+}),
+
   }),
 });
 

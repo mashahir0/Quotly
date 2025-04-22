@@ -86,21 +86,26 @@ async sendMessage(req: AuthenticatedRequest, res: Response) {
     try {
       const { search = "", page = "1", limit = "10" } = req.query;
       const userId = req.user?.id;
+  
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
   
-      const users = await chatService.getRecentUsers(
+      const usersData = await chatService.getRecentUsersPaginated(
         userId,
         search as string,
         Number(page),
-        Number(limit),
-    
+        Number(limit)
       );
-      res.json({ users });
+  
+      res.json({
+        users: usersData.users,
+        total: usersData.total,
+      });
     } catch (error) {
-      console.error("Error getting recent chat users", error);
+      console.error("Error getting paginated chat users", error);
       res.status(500).json({ message: "Server error" });
     }
   }
+  
   
 };
 

@@ -11,7 +11,9 @@ const userSchema = new mongoose.Schema<IUser>({
   userStatus:  {type : String , enum: ["Active", "Blocked"], default : 'Active'},
   role: { type: String, default: 'user' },
   photo:{type :String,default:null}
-});
+},
+{ timestamps: true }
+);
 
 
 const userModel = mongoose.model<IUser>('User', userSchema);
