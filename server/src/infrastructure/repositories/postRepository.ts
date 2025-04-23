@@ -168,7 +168,19 @@ async findSavedPost(userId: string, postId: string) {
       { userId },
       { $set: { quotes: [] } }
     );
+  },
+  async getMostLiked(limit: number) {
+    return await postModel
+      .find()
+      .sort({ likes: -1 })
+      .limit(limit)
+      .select("text userId likes shareId") // Only return these fields
+      .populate({
+        path: "userId",
+        select: "name photo", // Only populate name & photo from User
+      });
   }
+  
 };
 
 export default postRepository;

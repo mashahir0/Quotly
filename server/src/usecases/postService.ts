@@ -86,6 +86,9 @@ const postServices = {
   },
   async  clearSavedQuotes(userId: string) {
     return await postRepository.clearSavedQuotes(userId);
+  },
+  async  getMostlikedPost(limit : number){
+    return await postRepository.getMostLiked(limit)
   }
 };
 

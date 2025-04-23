@@ -1,4 +1,4 @@
-import { PostType } from "../../domain/interface/savedPost";
+import { MostLikedPost, Post } from "../../domain/interface/savedPost";
 import { baseQueryWithReauth } from "../connectionApis/User";
 import { createApi } from "@reduxjs/toolkit/query/react";
 
@@ -80,8 +80,11 @@ export const postApi = createApi({
     clearSavedQuotes: builder.mutation<void, void>({
       query: () => ({ url: "/post/clear-quotes", method: "POST" }),
     }),
-    listsavedQuotes: builder.query<PostType[], void>({
+    listsavedQuotes: builder.query<Post[], void>({
       query: () => "/post/list-saved-quotes",
+    }),
+    getMostLikedPosts: builder.query<MostLikedPost[], number | void>({
+      query: (limit = 5) => `/post/most-liked?limit=${limit}`,
     }),
   }),
 });
@@ -99,5 +102,6 @@ export const {
   useRemoveSavedQuoteMutation,
   useGetSavedQuotesQuery,
   useClearSavedQuotesMutation,
-  useListsavedQuotesQuery
+  useListsavedQuotesQuery,
+  useGetMostLikedPostsQuery
 } = postApi;

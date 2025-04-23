@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import postServices from "../../usecases/postService";
 import UserRepository from "../../infrastructure/repositories/userRepository";
 import { io } from "../../server";
+import postRepository from "../../infrastructure/repositories/postRepository";
+
 
 
 interface AuthenticatedRequest extends Request {
@@ -66,6 +68,8 @@ const postController = {
         likes: updatedPost.likes,
         dislikes: updatedPost.dislikes,
       });
+      const topLikedPosts = await postServices.getMostlikedPost(5)
+      io.emit("updateTopPosts", topLikedPosts);
 
       const topProfiles = await postServices.getTopLikedProfiles(5);
       io.emit("updateScoreboard", topProfiles);
@@ -123,6 +127,9 @@ const postController = {
 
       // ✅ Emit live updates to clients
       io.emit("updateScoreboard", topProfiles);
+      // example inside your like controller
+      
+
 
       res.status(200).json(topProfiles);
     } catch (error: any) {
@@ -224,6 +231,20 @@ async clearSavedQuote(req:AuthenticatedRequest , res:Response){
   } catch (error) {
     console.error("Error clearing saved quotes:", error);
     res.status(500).json({ message: "Something went wrong while clearing saved quotes" });
+  }
+},
+async getMostLikedPost(req: Request, res: Response) {
+  try {
+    const limit = parseInt(req.query.limit as string) || 5; // ✅ Convert string to number
+
+    if (isNaN(limit)) {
+      return res.status(400).json({ error: "Invalid limit value" });
+    }
+
+    const posts = await postServices.getMostlikedPost(limit);
+    res.status(200).json(posts);
+  } catch (error: any) {
+    res.status(500).json({ error: "Failed to fetch posts" });
   }
 }
 };

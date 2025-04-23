@@ -50,6 +50,7 @@ router.get("/list-saved-quotes",verifyToken(),postController.listSavedQuotes)
 
 //error need to fix (the route is not callling)
 router.post("/clear-quotes",verifyToken() , postController.clearSavedQuote);
+router.get('/most-liked',verifyToken(),postController.getMostLikedPost)
 
 
 export default router;
