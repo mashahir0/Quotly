@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useGetMostLikedPostsQuery } from "../../../data/api/postApi";
 import socket from "../../../utils/socket";
-import { MostLikedPost, Post } from "../../../domain/interface/savedPost";
+import { MostLikedPost } from "../../../domain/interface/savedPost";
 
 const TopLikedPosts = () => {
   const { data, isLoading } = useGetMostLikedPostsQuery();

@@ -1,6 +1,6 @@
 
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   useGetUsersChatQuery,
   useMarkMessagesAsSeenMutation,
@@ -32,14 +32,18 @@ const UserList: React.FC<UserListProps> = ({
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
-  const limit = 25;
+  const limit = 5;
 
   const { data, isLoading, isError, refetch } = useGetUsersChatQuery(
     { search: debouncedSearch, page, limit },
     { refetchOnFocus: true }
   );
+  
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  
 
-  console.log(data?.users); // This will help you inspect the data structure in the console.
+  console.log(data); // This will help you inspect the data structure in the console.
   const [markSeen] = useMarkMessagesAsSeenMutation();
   const messagesender = useSelector(
     (state: RootState) => state.auth.user?._id
@@ -53,6 +57,25 @@ const UserList: React.FC<UserListProps> = ({
     }, 300);
     return () => clearTimeout(handler);
   }, [search]);
+
+  useEffect(() => {
+    if (!data?.users) return;
+  
+    if (page === 1) {
+      setAllUsers(data.users);
+    } else {
+      setAllUsers((prev) => {
+        const newUsers = data.users.filter(
+          (user) => !prev.some((u) => u._id === user._id)
+        );
+        return [...prev, ...newUsers];
+      });
+    }
+  }, [data, page]);
+  
+
+  
+  
 
   // Socket listener
   useEffect(() => {
@@ -80,6 +103,25 @@ const UserList: React.FC<UserListProps> = ({
   const totalPages = useMemo(() => {
     return Math.ceil((data?.total || 0) / limit);
   }, [data, limit]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoading && page < totalPages) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 1 }
+    );
+  
+    const currentLoader = loaderRef.current;
+    if (currentLoader) observer.observe(currentLoader);
+  
+    return () => {
+      if (currentLoader) observer.unobserve(currentLoader);
+    };
+  }, [isLoading, page, totalPages]);
+  
   
 
   return (
@@ -107,7 +149,7 @@ const UserList: React.FC<UserListProps> = ({
 
         <ul>
           <AnimatePresence>
-          {(data?.users || []).map((user: User) => {
+          {allUsers.map((user: User) => {
               const showDot = user.seen === false && user.isSender === false;
               return (
                 <motion.li
@@ -151,23 +193,12 @@ const UserList: React.FC<UserListProps> = ({
       </div>
 
       {/* Pagination Controls */}
-      <div className="mt-2 flex justify-center gap-4">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage((p) => p - 1)}
-          className="px-4 py-1 bg-gray-800 text-white rounded disabled:opacity-40"
-        >
-          Prev
-        </button>
-       
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage((p) => p + 1)}
-          className="px-4 py-1 bg-gray-800 text-white rounded disabled:opacity-40"
-        >
-          Next
-        </button>
-      </div>
+      {/* Infinite Scroll Loader */}
+<div ref={loaderRef} className="py-4 text-center text-gray-400">
+  {isLoading && <p>Loading more users...</p>}
+  {!isLoading && page >= totalPages && <p>No more users</p>}
+</div>
+
     </div>
   );
 };
