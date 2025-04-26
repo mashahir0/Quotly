@@ -84,7 +84,7 @@ async sendMessage(req: AuthenticatedRequest, res: Response) {
 
   async getUsersForChat(req: AuthenticatedRequest, res: Response) {
     try {
-      const { search = "", page = "1", limit = "10" } = req.query;
+      const { search = "", page = "1", limit = "20" } = req.query;
       const userId = req.user?.id;
   
       if (!userId) return res.status(401).json({ message: "Unauthorized" });

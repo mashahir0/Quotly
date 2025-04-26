@@ -16,6 +16,7 @@ const chatService = {
   },
   async getRecentUsersPaginated(userId: string, search: string, page: number, limit: number) {
     if (search.trim()) {
+      console.log(search ,"from serivce chat")
       return await UserRepository.searchUsers(search, page, limit);
     } else {
       return await chatRepository.getRecentChatUsersPaginated(userId, page, limit);
