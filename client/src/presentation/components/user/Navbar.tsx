@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
 
   // Get user from Redux store
-  const user = useSelector((state: RootState) => state?.auth?.user);
+  const user = useSelector((state: RootState) => state?.auth?.U);
   const deleteAllCookies = () => {
     const cookies = document.cookie.split(";");
   

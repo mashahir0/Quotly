@@ -84,17 +84,20 @@ async sendMessage(req: AuthenticatedRequest, res: Response) {
 
   async getUsersForChat(req: AuthenticatedRequest, res: Response) {
     try {
+
       const { search = "", page = "1", limit = "20" } = req.query;
       const userId = req.user?.id;
-  
+
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
-  
+
       const usersData = await chatService.getRecentUsersPaginated(
         userId,
         search as string,
         Number(page),
         Number(limit)
       );
+      if(!usersData) return res.status(401).json({message : "user data not found"})
+
   
       res.json({
         users: usersData.users,

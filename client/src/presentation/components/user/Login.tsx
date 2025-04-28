@@ -67,6 +67,7 @@ const LoginForm = () => {
   };
 
   const handleGoogleLogin = useGoogleLogin({
+    
     onSuccess: async (response) => {
       try {
         const { access_token } = response; // Google access token
@@ -74,10 +75,10 @@ const LoginForm = () => {
         // Send Google token to backend for verification & JWT generation
         const result = await googleLogin({ token: access_token }).unwrap();
 
+        navigate("/home");
         localStorage.setItem("userToken", result.accessToken);
         dispatch(setUser({ user: result.user }));
         toast.success(`Welcome back, ${result.user.name}! 🎉`);
-        navigate("/home");
       } catch (err) {
         toast.error("oops something wrong!!!!");
         console.error("Google login failed:", err);

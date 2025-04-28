@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import chatModel from "../../domain/models/chatModel";
+import userModel from "../../domain/models/userModel";
 
 const chatRepository = {
     // ✅ Save a new message
@@ -107,100 +108,215 @@ const chatRepository = {
     // }
 
 
-    async getRecentChatUsersPaginated(userId: string, page: number, limit: number) {
+    // async getRecentChatUsersPaginated(userId: string, page: number, limit: number) {
+    //   const objectId = new mongoose.Types.ObjectId(userId);
+    //   const skip = (page - 1) * limit;
+    
+    //   const baseMatch = {
+    //     $match: {
+    //       $or: [
+    //         { senderId: objectId },
+    //         { receiverId: objectId }
+    //       ]
+    //     }
+    //   };
+    
+    //   const aggregation: mongoose.PipelineStage[] = [
+    //     baseMatch,
+    //     {
+    //       $addFields: {
+    //         chatWith: {
+    //           $cond: [
+    //             { $eq: ["$senderId", objectId] },
+    //             "$receiverId",
+    //             "$senderId"
+    //           ]
+    //         },
+    //         isSender: { $eq: ["$senderId", objectId] }
+    //       }
+    //     },
+    //     { $sort: { createdAt: -1 } },
+    //     {
+    //       $group: {
+    //         _id: "$chatWith",
+    //         seen: { $first: "$seen" },
+    //         isSender: { $first: "$isSender" },
+    //         lastMessageAt: { $first: "$createdAt" }
+    //       }
+    //     },
+    //     {
+    //       $lookup: {
+    //         from: "users",
+    //         localField: "_id",
+    //         foreignField: "_id",
+    //         as: "user"
+    //       }
+    //     },
+    //     { $unwind: "$user" },
+    //     {
+    //       $project: {
+    //         _id: "$user._id",
+    //         name: "$user.name",
+    //         photo: "$user.photo",
+    //         seen: 1,
+    //         isSender: 1,
+    //         lastMessageAt: 1
+    //       }
+    //     },
+    //     { $sort: { lastMessageAt: -1 } },
+    //     { $skip: skip },
+    //     { $limit: limit }
+    //   ];
+    
+    //   const users = await chatModel.aggregate(aggregation);
+    
+    //   // Count total unique users chatted with
+    //   const totalAgg = await chatModel.aggregate([
+    //     baseMatch,
+    //     {
+    //       $addFields: {
+    //         chatWith: {
+    //           $cond: [
+    //             { $eq: ["$senderId", objectId] },
+    //             "$receiverId",
+    //             "$senderId"
+    //           ]
+    //         }
+    //       }
+    //     },
+    //     {
+    //       $group: { _id: "$chatWith" }
+    //     },
+    //     { $count: "total" }
+    //   ]);
+    
+    //   const total = totalAgg[0]?.total || 0;
+    
+    //   return {
+    //     users,
+    //     total
+    //   };
+    // }
+    async getRecentChatUsersPaginated(userId: string, page: number, limit: number, search?: string) {
       const objectId = new mongoose.Types.ObjectId(userId);
       const skip = (page - 1) * limit;
     
-      const baseMatch = {
-        $match: {
-          $or: [
-            { senderId: objectId },
-            { receiverId: objectId }
-          ]
-        }
-      };
-    
-      const aggregation: mongoose.PipelineStage[] = [
-        baseMatch,
-        {
-          $addFields: {
-            chatWith: {
-              $cond: [
-                { $eq: ["$senderId", objectId] },
-                "$receiverId",
-                "$senderId"
-              ]
-            },
-            isSender: { $eq: ["$senderId", objectId] }
-          }
-        },
-        { $sort: { createdAt: -1 } },
-        {
-          $group: {
-            _id: "$chatWith",
-            seen: { $first: "$seen" },
-            isSender: { $first: "$isSender" },
-            lastMessageAt: { $first: "$createdAt" }
-          }
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "_id",
-            foreignField: "_id",
-            as: "user"
-          }
-        },
-        { $unwind: "$user" },
-        {
-          $project: {
-            _id: "$user._id",
-            name: "$user.name",
-            photo: "$user.photo",
-            seen: 1,
-            isSender: 1,
-            lastMessageAt: 1
-          }
-        },
-        { $sort: { lastMessageAt: -1 } },
-        { $skip: skip },
-        { $limit: limit }
-      ];
-    
-      const users = await chatModel.aggregate(aggregation);
-    
-      // Count total unique users chatted with
-      const totalAgg = await chatModel.aggregate([
-        baseMatch,
-        {
-          $addFields: {
-            chatWith: {
-              $cond: [
-                { $eq: ["$senderId", objectId] },
-                "$receiverId",
-                "$senderId"
-              ]
+      if (search && search.trim()) {
+        // 🔥 Search all users (userModel)
+        const users = await userModel.aggregate([
+          {
+            $match: {
+              name: { $regex: search, $options: "i" } // match name
             }
+          },
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              photo: 1
+            }
+          },
+          { $skip: skip },
+          { $limit: limit }
+        ]);
+    
+        const totalAgg = await userModel.aggregate([
+          {
+            $match: {
+              name: { $regex: search, $options: "i" }
+            }
+          },
+          { $count: "total" }
+        ]);
+    
+        const total = totalAgg[0]?.total || 0;
+    
+        return { users, total };
+    
+      } else {
+        // 🔥 No search -> fetch recently chatted users (chatModel)
+        const baseMatch = {
+          $match: {
+            $or: [
+              { senderId: objectId },
+              { receiverId: objectId }
+            ]
           }
-        },
-        {
-          $group: { _id: "$chatWith" }
-        },
-        { $count: "total" }
-      ]);
+        };
     
-      const total = totalAgg[0]?.total || 0;
+        const aggregation: mongoose.PipelineStage[] = [
+          baseMatch,
+          {
+            $addFields: {
+              chatWith: {
+                $cond: [
+                  { $eq: ["$senderId", objectId] },
+                  "$receiverId",
+                  "$senderId"
+                ]
+              },
+              isSender: { $eq: ["$senderId", objectId] }
+            }
+          },
+          { $sort: { createdAt: -1 } },
+          {
+            $group: {
+              _id: "$chatWith",
+              seen: { $first: "$seen" },
+              isSender: { $first: "$isSender" },
+              lastMessageAt: { $first: "$createdAt" }
+            }
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "_id",
+              foreignField: "_id",
+              as: "user"
+            }
+          },
+          { $unwind: "$user" },
+          {
+            $project: {
+              _id: "$user._id",
+              name: "$user.name",
+              photo: "$user.photo",
+              seen: 1,
+              isSender: 1,
+              lastMessageAt: 1
+            }
+          },
+          { $sort: { lastMessageAt: -1 } },
+          { $skip: skip },
+          { $limit: limit }
+        ];
     
-      return {
-        users,
-        total
-      };
+        const users = await chatModel.aggregate(aggregation);
+    
+        const totalAgg = await chatModel.aggregate([
+          baseMatch,
+          {
+            $addFields: {
+              chatWith: {
+                $cond: [
+                  { $eq: ["$senderId", objectId] },
+                  "$receiverId",
+                  "$senderId"
+                ]
+              }
+            }
+          },
+          {
+            $group: { _id: "$chatWith" }
+          },
+          { $count: "total" }
+        ]);
+    
+        const total = totalAgg[0]?.total || 0;
+    
+        return { users, total };
+      }
     }
-    
-    
-    
-    
-    
     
     
     

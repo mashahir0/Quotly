@@ -14,13 +14,18 @@ const chatService = {
   async markMessagesAsSeen(senderId: string, receiverId: string) {
     return await chatRepository.markMessagesAsSeen(senderId, receiverId);
   },
+  // async getRecentUsersPaginated(userId: string, search: string, page: number, limit: number) {
+  //   if (search.trim()) {
+  //     console.log(search ,"from serivce chat")
+  //     return await UserRepository.searchUsers(search, page, limit);
+  //   } else {
+  //     return await chatRepository.getRecentChatUsersPaginated(userId, page, limit);
+  //   }
+  // }
   async getRecentUsersPaginated(userId: string, search: string, page: number, limit: number) {
-    if (search.trim()) {
-      console.log(search ,"from serivce chat")
-      return await UserRepository.searchUsers(search, page, limit);
-    } else {
-      return await chatRepository.getRecentChatUsersPaginated(userId, page, limit);
-    }
+
+      return await chatRepository.getRecentChatUsersPaginated(userId, page, limit,search);
+    
   }
   
   

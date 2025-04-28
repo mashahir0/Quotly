@@ -26,7 +26,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null); // ✅ Fix
   const messagesEndRef = useRef<HTMLDivElement | null>(null); // For auto-scrolling
-  const senderUserId  = useSelector((state : RootState) => state.auth?.user?._id)
+  const senderUserId  = useSelector((state : RootState) => state.auth?.U?._id)
 
   useEffect(() => {
     if (receiverId) {

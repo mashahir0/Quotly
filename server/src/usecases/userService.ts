@@ -4,7 +4,7 @@ import tokenService from "./tokenService";
 import { User, IUser } from "../domain/User";
 import axios from "axios";
 import postRepository from "../infrastructure/repositories/postRepository";
-import redisClient from "../redis";
+import redisClient from "../config/redis";
 
 const userService = {
   async register(userData: { name: string; email: string; password: string }) {

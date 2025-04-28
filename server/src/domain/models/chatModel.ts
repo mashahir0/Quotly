@@ -26,8 +26,8 @@ const chatSchema = new mongoose.Schema(
   }
 );
 
-// 🔥 TTL index: Automatically delete messages 7 days (604800 seconds) after createdAt
-chatSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 7 });
+
+chatSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 15 });
 
 
 const chatModel = mongoose.model("Chat", chatSchema);

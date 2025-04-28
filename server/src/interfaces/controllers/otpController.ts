@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
-import redisClient from "../../redis";
+import redisClient from "../../config/redis";
 import { sendMail } from "../../utils/mailer";
 
 export const sendOtp = async (req: Request, res: Response) => {
