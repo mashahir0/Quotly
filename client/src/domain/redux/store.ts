@@ -12,7 +12,7 @@ import { chatApi } from "../../data/api/chatApi";
 const authPersistConfig = {
   key: "auth",
   storage,
-  whitelist: ["user", "admin"], // ✅ Persist both user & admin
+  whitelist: ["U", "A"], // ✅ Persist both user & admin
 };
 
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);

@@ -9,13 +9,13 @@ export interface UserData {
 }
 
 export interface AuthState {
-  user: UserData | null;
-  admin: UserData | null;
+  U: UserData | null;
+  A: UserData | null;
 }
 
 const initialState: AuthState = {
-  user: null,
-  admin: null,
+  U: null,
+  A: null,
 };
 
 const authSlice = createSlice({
@@ -24,17 +24,17 @@ const authSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<{ user: UserData & { _id?: string } }>) => { 
       const { password, ...filteredUser } = action.payload.user; // Remove `_id`
-      state.user = filteredUser;  // ✅ Update only user, keep admin intact
+      state.U = filteredUser;  // ✅ Update only user, keep admin intact
     },
     setAdmin: (state, action: PayloadAction<{ admin: UserData & { _id?: string } }>) => { 
       const { password, ...filteredAdmin } = action.payload.admin; // Remove `_id`
-      state.admin = filteredAdmin;  // ✅ Update only admin, keep user intact
+      state.A = filteredAdmin;  // ✅ Update only admin, keep user intact
     },
     clearAdmin: (state) => {
-      state.admin = null;  // ✅ Only clear admin, user remains
+      state.A = null;  // ✅ Only clear admin, user remains
     },
     clearUser: (state) => {
-      state.user = null;  // ✅ Only clear user, admin remains
+      state.U = null;  // ✅ Only clear user, admin remains
     },
   },
 });
