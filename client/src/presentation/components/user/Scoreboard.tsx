@@ -8,7 +8,6 @@ const Scoreboard = () => {
 
   useEffect(() => {
     socket.on("updateScoreboard", (updatedProfiles) => {
-      console.log("🔥 Scoreboard Updated:", updatedProfiles);
       setTopProfiles(updatedProfiles);
     });
 

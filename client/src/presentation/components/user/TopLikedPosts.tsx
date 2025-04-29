@@ -6,7 +6,7 @@ import { MostLikedPost } from "../../../domain/interface/savedPost";
 const TopLikedPosts = () => {
   const { data, isLoading } = useGetMostLikedPostsQuery();
   const [topPosts, setTopPosts] = useState<MostLikedPost[]>(data || []);
-    console.log(topPosts)
+
 
 useEffect(()=>{
     if(data){
@@ -16,7 +16,6 @@ useEffect(()=>{
 
   useEffect(() => {
     socket.on("updateTopPosts", (updatedPosts: MostLikedPost[]) => {
-      console.log("🔥 Top Posts Updated:", updatedPosts);
       setTopPosts(updatedPosts);
     });
 

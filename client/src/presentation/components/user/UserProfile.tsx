@@ -27,7 +27,6 @@ const UserProfile = () => {
 
   useEffect(() => {
     refetch();
-    console.log("Checking user data:", user);
   }, [user]);
 
   // Handle file selection and generate preview

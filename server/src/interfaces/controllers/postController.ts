@@ -101,9 +101,10 @@ const postController = {
       const userId = req.user?.id;
       const { postId } = req.params;
       if (!userId) return res.status(401).json({ message: "Unauthorized" });
-      const result = await postServices.deletePost(userId, postId);
+      const result = await postServices.deletePost(postId, userId);
       res.status(200).json(result);
     } catch (error: any) {
+      console.log(error)
       res.status(400).json({ message: error.message });
     }
   },

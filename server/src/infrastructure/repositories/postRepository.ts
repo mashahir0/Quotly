@@ -171,7 +171,7 @@ async findSavedPost(userId: string, postId: string) {
   },
   async getMostLiked(limit: number) {
     return await postModel
-      .find()
+      .find({isPublic : true})
       .sort({ likes: -1 })
       .limit(limit)
       .select("text userId likes shareId") // Only return these fields

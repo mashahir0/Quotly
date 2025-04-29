@@ -41,9 +41,6 @@ const UserList: React.FC<UserListProps> = ({
   
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const loaderRef = useRef<HTMLDivElement | null>(null);
-  
-
-  console.log(data); // This will help you inspect the data structure in the console.
   const [markSeen] = useMarkMessagesAsSeenMutation();
   const messagesender = useSelector(
     (state: RootState) => state.auth.U?._id
