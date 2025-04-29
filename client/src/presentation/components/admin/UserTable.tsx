@@ -11,6 +11,7 @@ const UserTable = () => {
   const [search, setSearch] = useState("");
   
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [postModalUserId, setPostModalUserId] = useState<string | null>(null); 
   const [actionType, setActionType] = useState<"block" | "delete" | null>(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -48,7 +49,7 @@ const UserTable = () => {
   };
 
   const handleViewPosts = (id: string) => {
-    setSelectedUserId(id);
+    setPostModalUserId(id);
   };
 
   if (isLoading) return <p>Loading...</p>;
@@ -151,10 +152,10 @@ const UserTable = () => {
             : "Are you sure you want to toggle this user's block status?"
         }
       />
-      {selectedUserId && (
+     {postModalUserId && (
   <UserPostsModal
-    userId={selectedUserId}
-    onClose={() => setSelectedUserId(null)}
+    userId={postModalUserId}
+    onClose={() => setPostModalUserId(null)}
   />
 )}
     </div>

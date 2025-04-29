@@ -1,3 +1,6 @@
+
+
+
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPaperPlane } from "react-icons/fa";
@@ -11,10 +14,10 @@ import { RootState } from "../../../domain/redux/store";
 
 interface ChatWindowProps {
   receiverId: string | null;
-
+  onBack?: () => void; 
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId ,onBack}) => {
   const { data: messages, isLoading ,refetch} = useGetMessagesQuery(receiverId || "", {
     skip: !receiverId,
   });
@@ -149,65 +152,77 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ receiverId }) => {
   };
 
   return (
-    <div className="w-2/3 bg-gray-900 p-4 rounded-lg h-full flex flex-col overflow-hidden">
-     
-      <div className="flex-1 overflow-y-auto scroll-smooth custom-scrollbar">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-full">
-            <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-          </div>
-        ) : (
-          <AnimatePresence>
-            {chatMessages.map((msg: any, index: number) => (
-              <motion.div
-                key={msg._id || index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className={`p-2 my-2 ${
-                  msg.senderId?._id === senderUserId
-                    ? "text-right"
-                    : "text-left"
-                }`}
-              >
-                <p className="bg-gray-700 inline-block p-2 rounded-lg text-white">
-                  {msg.message}
-                </p>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        )}
+    <div className="w-full md:w-2/3 bg-gray-900 p-4 rounded-lg h-full flex flex-col overflow-hidden">
+    {/* Back button for mobile */}
+    {onBack && (
+      <button
+        className="text-white text-sm mb-3 flex items-center gap-2"
+        onClick={onBack}
+      >
+        ← Back
+      </button>
+    )}
 
-        {isTyping && (
-          <div className="text-gray-400 text-sm italic px-2">typing...</div>
-        )}
-
-        <div ref={messagesEndRef} />
-      </div>
-
-      {receiverId && (
-        <div className="flex mt-3">
-          <input
-            type="text"
-            className="flex-1 p-2 rounded-md bg-gray-800 text-white outline-none"
-            placeholder="Type a message..."
-            value={text}
-            onChange={(e) => {
-              setText(e.target.value);
-              handleTyping();
-            }}
-          />
-          <button
-            onClick={handleSend}
-            className="ml-2 bg-blue-600 text-white p-2 rounded-md flex items-center justify-center transition hover:bg-blue-700"
-          >
-            <FaPaperPlane size={16} />
-          </button>
+    <div className="flex-1 overflow-y-auto scroll-smooth custom-scrollbar">
+      {isLoading ? (
+        <div className="flex justify-center items-center h-full">
+          <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
         </div>
+      ) : (
+        <AnimatePresence>
+          {chatMessages.map((msg, index) => (
+            <motion.div
+              key={msg._id || index}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className={`p-2 my-2 ${
+                msg.senderId?._id === senderUserId
+                  ? "text-right"
+                  : "text-left"
+              }`}
+            >
+              <p className="bg-gray-700 inline-block p-2 rounded-lg text-white">
+                {msg.message}
+              </p>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       )}
+
+      {isTyping && (
+        <div className="text-gray-400 text-sm italic px-2">typing...</div>
+      )}
+
+      <div ref={messagesEndRef} />
     </div>
+
+    {receiverId && (
+      <div className="flex mt-3">
+        <input
+          type="text"
+          className="flex-1 p-2 rounded-md bg-gray-800 text-white outline-none"
+          placeholder="Type a message..."
+          value={text}
+          onChange={(e) => {
+            setText(e.target.value);
+            handleTyping();
+          }}
+        />
+        <button
+          onClick={handleSend}
+          className="ml-2 bg-blue-600 text-white p-2 rounded-md flex items-center justify-center transition hover:bg-blue-700"
+        >
+          <FaPaperPlane size={16} />
+        </button>
+      </div>
+    )}
+  </div>
   );
 };
 
 export default ChatWindow;
+
+
+

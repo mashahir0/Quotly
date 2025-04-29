@@ -26,6 +26,7 @@ const UserRepository = {
     limit: number;
   }) {
     const query = {
+      role : {$ne : "admin"},
       $or: [
         { name: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
