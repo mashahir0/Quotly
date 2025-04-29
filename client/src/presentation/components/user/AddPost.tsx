@@ -12,8 +12,7 @@ const AddPost: React.FC<{ onPostAdded?: () => void }> = ({ onPostAdded }) => {
     e.preventDefault();
 
     try {
-      const res = await addPost({ text }).unwrap();
-      console.log(res);
+       await addPost({ text }).unwrap();
       setText("");
       refetch();
       toast.success(`New post shared 🎉`);
@@ -23,7 +22,7 @@ const AddPost: React.FC<{ onPostAdded?: () => void }> = ({ onPostAdded }) => {
       console.error(err.data.error);
     }
   };
-  console.log(error);
+
 
   return (
     <div className=" w-full  max-w-md bg-white/10 text-white rounded-2xl shadow-lg p-6 self-start">

@@ -15,6 +15,7 @@ const PostCard = ({ post }: { post: any }) => {
   const [toggleLikeDislike] = useToggleLikeDislikeMutation();
   const [isModalOpen, setIsModalOpen] = useState(false); // ✅ State to open/close modal
 
+
   useEffect(() => {
     setLikes(post.likes);
     setDislikes(post.dislikes);
@@ -60,7 +61,7 @@ const PostCard = ({ post }: { post: any }) => {
         className="bg-gray-800 p-5 rounded-lg shadow-lg flex flex-col justify-between h-80 max-h-80 cursor-pointer transition-transform hover:scale-105"
       >
         {/* Profile Section */}
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-center gap-3 mb-2" >
           {post.userId?.photo ? (
             <img src={post.userId?.photo} alt="Profile" className="w-12 h-12 rounded-full object-cover border-2 border-gray-500" />
           ) : (

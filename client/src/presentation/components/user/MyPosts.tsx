@@ -42,7 +42,7 @@ const MyPosts = () => {
       const response = await deletePost({
         postId: deleteModal.postId,
       }).unwrap();
-      toast.error(response.message);
+      toast.success(response.message);
       refetch();
     } catch (error) {
       toast.error("Failed to delete post");

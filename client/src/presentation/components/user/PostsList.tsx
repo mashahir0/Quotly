@@ -22,7 +22,7 @@ const PostsList = () => {
           {/* Post Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.posts.map((post: any) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post._id} post={post} />
             ))}
           </div>
 
