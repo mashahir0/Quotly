@@ -5,10 +5,12 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "react-hot-toast";
 
 
+
 function App() {
   const routes = [...userRoutes,...adminRoutes  ]
   const router = createBrowserRouter(routes)
-  const GOOGLE_CLIENT_ID='296807436374-9fofl6fhm8u6g57d1ad18lipjpjd1h7t.apps.googleusercontent.com'
+  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID!;
+
   return (
    <>
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>

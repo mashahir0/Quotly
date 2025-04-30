@@ -7,7 +7,7 @@ interface User {
   photo?: string;
   seen: boolean;
   isSender: boolean;
-  // ...other fields
+
 }
 
 export const chatApi = createApi({
@@ -22,18 +22,18 @@ export const chatApi = createApi({
       query: ({ receiverId, message }) => ({
         url: "/chat/send",
         method: "POST",
-        body: { receiverId, message }, // ✅ Fix key name
+        body: { receiverId, message }, 
       }),
       invalidatesTags: ["Messages"],
     }),
 
-    // ✅ Get Chat Messages for a User
+
     getMessages: builder.query<any[], string>({
       query: (receiverId) => `/chat/${receiverId}`,
       providesTags: ["Messages"],
     }),
 
-    // ✅ Mark Messages as Seen
+
     markMessagesAsSeen: builder.mutation<void, string>({
       query: (receiverId) => ({
         url: `/chat/mark-seen/${receiverId}`,
@@ -44,7 +44,7 @@ export const chatApi = createApi({
     getUsersChat: builder.query<
   {
     total: number;
-    users: User[]; // ideally replace `any` with a proper `User` interface
+    users: User[]; 
   },
   { search?: string; page?: number; limit?: number }
 >({
