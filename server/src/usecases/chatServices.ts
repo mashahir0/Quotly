@@ -23,9 +23,7 @@ const chatService = {
   //   }
   // }
   async getRecentUsersPaginated(userId: string, search: string, page: number, limit: number) {
-
-      return await chatRepository.getRecentChatUsersPaginated(userId, page, limit,search);
-    
+   return await chatRepository.getRecentChatUsersPaginated(userId, page, limit,search);
   }
   
   

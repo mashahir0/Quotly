@@ -17,16 +17,15 @@ const postController = {
       if (!userId) throw new Error("user is not authenticated ");
       const { text } = req.body;
       const len = text.trim().length;
-      if (len > 250 || len < 100)
-        return res
-          .status(400)
-          .json({
-            message:
-              "string must contain morethan 100 letters or lessthan 250 letters",
-          });
+      if (len < 100 || len > 310) {
+        return res.status(400).json({
+          message: "Text must be between 100 and 300 characters.",
+        });
+      }
       await postServices.createPost(userId, text);
       res.status(200).json({ message: "post created successfully" });
     } catch (error: any) {
+      console.log(error)
       res.status(400).json({ error: error.message });
     }
   },
